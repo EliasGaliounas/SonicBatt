@@ -1,5 +1,8 @@
 <h1 align="center">SonicBatt</h1>
 
+<h1 align="left">Documentation</h1>
+https://eliasgaliounas.github.io/SonicBatt/
+
 <h1 align="left">Setting up</h1>
 
 1) Clone the repository to a local folder
@@ -15,5 +18,3 @@
 
 <h1 align="left">Data availability</h1>
 
-<h1 align="left">Documentation</h1>
-https://eliasgaliounas.github.io/SonicBatt/
