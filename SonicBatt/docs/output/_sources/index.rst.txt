@@ -8,10 +8,16 @@ Welcome to SonicBatt's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents:  
    
    api
-   
+
+API
+=========
+
+.. automodule:: SonicBatt.utils
+   :members:
+   :undoc-members:
 
 Indices and tables
 ==================

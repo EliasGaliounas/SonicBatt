@@ -2,10 +2,9 @@ class Pulse:
     """
     Contains information for single pulses.
     "C" indicates a step where current is not zero.
-    "R" indicates a rest step.
+    "R" indicates a rest step.<br>
     """
     def __init__(self):
-
         # Index labelling:
         self.C_start_ind = None
         self.C_end_ind = None

@@ -3,3 +3,4 @@ matplotlib >= 3.6.3
 pandas >= 1.5.0
 numpy >= 1.23.0
 pyarrow >= 13.0.0
+sphinx >= 7.1.2
