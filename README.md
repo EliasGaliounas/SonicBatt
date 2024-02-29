@@ -1,0 +1,13 @@
+<h1 align="center">SonicBatt</h1>
+
+<h1 align="left">Setting up</h1>
+
+1) Clone the repository to a local folder
+   - Create a local directory
+   - Clone the github repository to that directory: `git clone` https://github.com/EliasGaliounas/SonicBatt.git
+2) Create anaconda environment:
+   - Launch the Anaconda prompt
+   - `conda env create -f` '<path/to/cloned_repository>\environment.yml' (replace <path/to/cloned_repository> with you path.<br>Don't keep the <>).
+3) Install SonicBatt
+   - `cd` to the <path/to/cloned_repository>
+   - `pip install .` (or alternatively `pip install -e .` to install in editable mode)
