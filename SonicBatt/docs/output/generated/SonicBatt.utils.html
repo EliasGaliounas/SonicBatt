@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SonicBatt.utils &#8212; SonicBatt 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=61cd365c" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="../api.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-SonicBatt.utils">
+<span id="sonicbatt-utils"></span><h1>SonicBatt.utils<a class="headerlink" href="#module-SonicBatt.utils" title="Link to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">animate_signals</span></code>(df_cycling, signals[, ...])</p></td>
+<td><p><a class="reference external" href="https://jckantor.github.io/CBE30338/A.03-Animation-in-Jupyter-Notebooks.html">https://jckantor.github.io/CBE30338/A.03-Animation-in-Jupyter-Notebooks.html</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ax_colormap</span></code>(x, y, C[, cmap, norm, crops, ...])</p></td>
+<td><p>x: 1D vector of the x-axis values y: 1D vector of the y-axis values C: 2D array containing the quantity that will define the colour for each x-y point. cmap: can vary, e.g. 'viridis', 'seismic', 'PiYG' norm: can be equal to 'norm', 'diverging' or 'log' crops: [crop_x1, crop_x2, crop_y1, crop_y2]. if crops[1] or crops[3] are left at their default     values of -1 then they will automatically be set so that there is no crop. xlims / ylims: If left at defaults (-1, -1) then they will be calculated with rounding     to the relevant order of magnitude so that there are axes ticks both before and after data begins. If any other value is given, that limit will be as in the raw data. cmap_lims: if left at defaults [-1,-1] then the color bar limits will be calculated automatically. otherwise they will be as per user input.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_lims</span></code>(data)</p></td>
+<td><p>Calculates plot limits for the input data with reasonable rounding.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">colorscheme</span></code>(n_increments[, cmap])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dQdV</span></code>(V, Q[, window_len, kernel_type, passes])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df_multiindex</span></code>(test_id, test_dir)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df_with_peaks</span></code>(test_id, test_dir[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">error_pulse_2RC</span></code>(x, u, y[, tail_heavy])</p></td>
+<td><p>if R0 is to be fitted, it will be included in x and not in u:</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">error_relax_2RC</span></code>(x, u, y[, tail_heavy])</p></td>
+<td><p>x = ['OCV', 'tau1', 'tau2', 'init_RC1_vs_R2_weight'] u = ['Vt_start', 'time_vector'] y = True Output (Vt)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_plot_pulse_2RC</span></code>(Vt, u, x0[, tail_heavy, ...])</p></td>
+<td><p>if R0 is to be fitted, it will be included in x and not in u:</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_plot_relax_2RC</span></code>(Vt, time_vector[, ...])</p></td>
+<td><p>x = ['OCV', 'tau1', 'tau2', 'init_RC1_vs_RC2_weight'] u = ['Vt_start', 'time_vector']</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model</span></code>(It, time_vector, Vt_start, SoC_start, ...)</p></td>
+<td><p>RC_params is a structured ndarray with entries: 'SoC', 'R0', 'tau1', 'tau2', 'R1', 'R2'</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">multi_cell_plot</span></code>(df, cells, cell_aliases[, ...])</p></td>
+<td><p>df must be a pandas DataFrame which is multiindex with: df.columns.levels[0] = Index(['cycling', 'acoustics', 'peak_heights', 'peak_tofs',     'fft_magns', 'fft_freq_indices_sorted'], dtype='object') cell: A list of cell names as defined in the database. cell_aliases: A dictionary where the keys are the cell names and the values are cell_aliases - which will be used instead of the cell names used in the database. Options: domain: 'time' or 'freq'     if 'time';      - relative_peaks: Bool     if 'freq'; must also provide an array 'freqs_id' of the frequencies in MHz     - freq_ind_pair: provide the indices of two frequencies to plot. - freq_lock: 0 or 1         if 0: Use the frequency indices which produce the 1st and 2nd largest fft coefficients              per cycle (i.e. filter on all of 'cell_id', 'c_rate' and 'cycle. if 1: Use the frequency indices which produce the 1st and 2nd largest fft coefficients              in the majority of cases per cell (i.e. all c_rates and all cycles per cell.)     - plot_freqs: Bool         Only used if freq_ind_pair is not specified. Triggers the inclusion of frequency plots.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code>(x_train[, x_test])</p></td>
+<td><p>Perform feature normalisation on individual features.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">peaks_plot</span></code>(s, s_smooth, acoustic_x, ...[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_colormap</span></code>(x, y, C[, cmap, norm, crops, ...])</p></td>
+<td><p>x: 1D vector of the x-axis values y: 1D vector of the y-axis values C: 2D array containing the quantity that will define the colour for each x-y point. cmap: can vary, e.g. 'viridis', 'seismic', 'PiYG' norm: can be equal to 'norm', 'diverging' or 'log' crops: [crop_x1, crop_x2, crop_y1, crop_y2]. if crops[1] or crops[3] are left at their default     values of -1 then they will automatically be set so that there is no crop. xlims / ylims: If left at defaults (-1, -1) then they will be calculated with rounding     to the relevant order of magnitude so that there are axes ticks both before and after data begins. If any other value is given, that limit will be as in the raw data. cmap_lims: if left at defaults [-1,-1] then the color bar limits will be calculated automatically. otherwise they will be as per user input. cbar_ticks: list of ticks for the colourbar. Default list of [-1] means default ticks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_deltaQ_dueto_eis</span></code>(IO_path[, xlims, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pulse_2RC</span></code>(x, u)</p></td>
+<td><p>if R0 is to be fitted, it will be included in x and not in u:</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">relax_2RC</span></code>(x, u)</p></td>
+<td><p>x = ['OCV', 'tau1', 'tau2', 'init_RC1_vs_R2_weight'] u = ['Vt_start', 'time_vector'] # Note that R0 is not provided or calculated # When fitting data the R0 part of the relaxation should be omitted</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">signal_peaks</span></code>(signals[, crop_ind, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth_by_convolution</span></code>(s[, window_len, ...])</p></td>
+<td><p><ul class="simple">
+<li><p>s is a single signal.</p></li>
+</ul>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth_by_sav_gol</span></code>(s[, window_len, pyorder, ...])</p></td>
+<td><p>Implements a Savitzky-Golay filter</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth_plot</span></code>(s, s_smooth, acoustic_x[, ...])</p></td>
+<td><p>s: a signle signal s_smooth: a signle smooth signal</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_colormap_V_SOC_T</span></code>(x, y1, y2, y3, y4, C[, ...])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Acoustic_Pulse</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Acoustic_PulseSequence</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Acoustic_p2C</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">EIS_object</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">EIS_sequence</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">OCV_fit</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Protocol_custom_objects</span></code>([test_id, cell_Q, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pulse</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PulseSequence</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">SonicBatt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">SonicBatt.utils</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">&lt;no title&gt;</a><ul>
+      <li>Previous: <a href="../api.html" title="previous chapter">&lt;no title&gt;</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Elias Galiounas.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/generated/SonicBatt.utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
