@@ -1,4 +1,4 @@
-name: SonicBatt
+name: SonicBatt_env
 channels:
   - anaconda
 dependencies:

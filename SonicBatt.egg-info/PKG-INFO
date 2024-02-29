@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: SonicBatt
+Version: 0.0.1
+Author: <Elias Galiounas>
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+License-File: LICENSE
