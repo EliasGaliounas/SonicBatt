@@ -4,7 +4,7 @@
 
 1) Clone the repository to a local folder
    - Create a local directory
-   - Clone the github repository to that directory: `git clone` https://github.com/EliasGaliounas/SonicBatt.git
+   - Clone the github repository to that directory: `git clone https://github.com/EliasGaliounas/SonicBatt.git`
 2) Create anaconda environment:
    - Launch the Anaconda prompt
    - `conda env create -f` '<path/to/cloned_repository>\environment.yml' (replace <path/to/cloned_repository> with you path.<br>Don't keep the <>).
