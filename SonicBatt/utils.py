@@ -1,3 +1,5 @@
+import numpy as np
+
 class Pulse:
     """
     Contains information for single pulses.

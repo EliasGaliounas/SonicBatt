@@ -15,6 +15,6 @@ def test_smooth_by_convolution(acoustic_data):
     df_acoust, _ = acoustic_data
     signals = df_acoust['acoustics'].to_numpy()
     s0 = signals[0]
-    _, s0_smooth = utils.smooth_by_convolution()
+    _, s0_smooth = utils.smooth_by_convolution(s0)
     assert ( len(s0) == len(s0_smooth) )
 
