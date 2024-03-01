@@ -38,7 +38,7 @@ jobs:
     #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest and geneate coverage report
       run: |
-        pytest --cov-report xml --cov=SonicBatt 
+        pytest --cov-report xml --cov= . 
       #   cp coverage.xml $GITHUB_WORKSPACE/coverage.xml
       # env:
       #   GITHUB_WORKSPACE: ${{ github.workspace }}
