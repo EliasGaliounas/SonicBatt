@@ -68,3 +68,5 @@ def smooth_by_convolution(s, window_len=11, kernel_type='rectangular', passes=10
         s_smooth = s_smooth[window_len:-window_len]
         s_extended = extend_signal(s_smooth)
     return(s, s_smooth)
+
+
