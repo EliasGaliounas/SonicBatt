@@ -9,8 +9,3 @@ addopts = "-ra -q"
 testpaths = [
     "tests"
 ]
-
-[tool.pytest]
-cov_options = {
-    "exclude": ["tests", "docs", "examples"]
-}
