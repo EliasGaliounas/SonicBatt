@@ -9,3 +9,4 @@ SonicBatt.egg-info/PKG-INFO
 SonicBatt.egg-info/SOURCES.txt
 SonicBatt.egg-info/dependency_links.txt
 SonicBatt.egg-info/top_level.txt
+tests/test_utils.py
