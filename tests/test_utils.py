@@ -25,6 +25,8 @@ def test_smooth_by_convolution(acoustic_data):
 def test_attribute_assignment():
     obj = utils.Pulse()
     for att in dir(obj):
-        setattr(obj, att, 0)
+        if not att.startswith('_'):
+            setattr(obj, att, 0)
     for att in dir(obj):
-        assert getattr(obj, att) == 0
+        if not att.startswith('_'):
+            assert getattr(obj, att) == 0
