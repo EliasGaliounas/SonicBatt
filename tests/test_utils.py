@@ -23,10 +23,16 @@ def test_smooth_by_convolution(acoustic_data):
                 assert ( len(s0) == len(s0_smooth) )
 
 def test_attribute_assignment():
-    obj = utils.Pulse()
-    for att in dir(obj):
-        if not att.startswith('_'):
-            setattr(obj, att, 0)
-    for att in dir(obj):
-        if not att.startswith('_'):
-            assert getattr(obj, att) == 0
+    class_objects = [
+        utils.Pulse(), utils.PulseSequence(),
+        utils.Acoustic_Pulse(), utils.Acoustic_PulseSequence(),
+        utils.EIS_object(), utils.EIS_sequence(),
+        utils.Protocol_custom_objects()
+    ]
+    for obj in class_objects:
+        for att in dir(obj):
+            if not att.startswith('_'):
+                setattr(obj, att, 0)
+        for att in dir(obj):
+            if not att.startswith('_'):
+                assert getattr(obj, att) == 0

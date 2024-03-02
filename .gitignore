@@ -1,5 +1,5 @@
 __pycache__/
 Raw data/
 .vscode/
-# .coverage
-# .coverage.xml
+.coverage
+.coverage.xml

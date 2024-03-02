@@ -34,6 +34,84 @@ class Pulse:
         self.C_end_R0 = None
         self.C_end_R0_dt = None
 
+class PulseSequence:
+    def __init__(self):
+    #Pulse_list will be a list of Pulse objects    
+        self.start_ind = None
+        self.end_ind = None
+        self.Pulse_list = []
+
+class Acoustic_Pulse:
+    def __init__(self):
+        """
+        Contains information for single pulses.
+        """
+        # Index labelling:
+        self.R_pre_start_ind = None
+        self.R_pre_end_ind = None
+        self.C_start_ind = None
+        self.C_end_ind = None
+        self.R_post_start_ind = None
+        self.R_post_end_ind = None
+        # Temperature info:
+        # During pulse
+        self.C_temp_mean = None
+        self.C_temp_stdev = None
+        self.C_temp_max = None
+        self.C_temp_min = None
+        self.C_start_temp = None
+        self.C_end_temp = None
+        # Relaxation post pulse
+        self.R_post_temp_mean = None
+        self.R_post_temp_stdev = None
+        self.R_post_temp_max = None
+        self.R_post_temp_min = None
+        self.R_post_start_temp = None
+        self.R_post_end_temp = None
+        # Relaxation pre pulse
+        self.R_pre_temp_mean = None
+        # OCV & mAh info:
+        self.R_pre_end_OCV = None
+        self.R_pre_end_mAh = None
+        self.C_start_OCV = None
+        self.C_start_mAh = None
+        self.R_post_end_OCV = None
+        self.R_post_end_mAh = None
+
+class Acoustic_PulseSequence:
+    def __init__(self):
+    #Pulse_list will be a list of Pulse objects    
+        self.start_ind = None
+        self.end_ind = None
+        self.Acoustic_Pulse_list = []
+
+class EIS_object:
+    def __init__(self):
+        self.eis_df = None
+        self.eis_id = None
+        self.eis_start_datetime = None
+        self.previous_ind = None # Latest index from df_cycling
+        # For studies doing EIS repetitions:
+        self.previous_step = None
+
+class EIS_sequence:
+    def __init__(self):
+        self.EIS_list = []
+
+class Protocol_custom_objects:
+    def __init__(self, test_id = None, cell_Q = None, P_char_chrg_seq = None,
+        P_char_dischrg_seq = None, EIS_char_chrg_seq = None, EIS_char_dischrg_seq = None,
+        EIS_other_seq = None, Acoustic_char_chrg_seq = None, Acoustic_char_dischrg_seq = None):
+        
+        self.test_id = test_id
+        self.cell_Q = cell_Q
+        self.P_char_chrg_seq = P_char_chrg_seq
+        self.P_char_dischrg_seq = P_char_dischrg_seq
+        self.EIS_char_chrg_seq = EIS_char_chrg_seq
+        self.EIS_char_dischrg_seq = EIS_char_dischrg_seq
+        self.EIS_other_seq = EIS_other_seq
+        self.Acoustic_char_chrg_seq = Acoustic_char_chrg_seq
+        self.Acoustic_char_dischrg_seq = Acoustic_char_dischrg_seq
 
 def smooth_by_convolution(s, window_len=11, kernel_type='rectangular', passes=10):
     """
