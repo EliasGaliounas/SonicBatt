@@ -22,3 +22,9 @@ def test_smooth_by_convolution(acoustic_data):
                     s0, window_len, kernel_type, passes)
                 assert ( len(s0) == len(s0_smooth) )
 
+def test_attribute_assignment():
+    obj = utils.Pulse()
+    for att in dir(obj):
+        setattr(obj, att, 0)
+    for att in dir(obj):
+        assert getattr(obj, att) == 0
