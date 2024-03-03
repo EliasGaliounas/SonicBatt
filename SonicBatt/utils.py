@@ -1,5 +1,13 @@
 import numpy as np
 
+def root_dir():
+    import subprocess
+    try:
+        root = subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip().decode('utf-8')
+        return root
+    except subprocess.CalledProcessError:
+        return None
+
 class Pulse:
     """
     Contains information for single pulses.
