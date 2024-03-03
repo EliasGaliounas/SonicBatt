@@ -42,12 +42,12 @@ class Pulse:
         self.C_end_R0 = None
         self.C_end_R0_dt = None
 
-class PulseSequence:
-    def __init__(self):
-    #Pulse_list will be a list of Pulse objects    
-        self.start_ind = None
-        self.end_ind = None
-        self.Pulse_list = []
+# class PulseSequence:
+#     def __init__(self):
+#     #Pulse_list will be a list of Pulse objects    
+#         self.start_ind = None
+#         self.end_ind = None
+#         self.Pulse_list = []
 
 class Acoustic_Pulse:
     def __init__(self):
