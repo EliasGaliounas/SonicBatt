@@ -3,6 +3,25 @@ import numpy as np
 import pandas as pd
 import pytest
 
+def test_root_dir():
+    my_dir = utils.root_dir()
+    assert(my_dir != None)
+
+def test_attribute_assignment():
+    class_objects = [
+        utils.Pulse(), utils.PulseSequence(),
+        utils.Acoustic_Pulse(), utils.Acoustic_PulseSequence(),
+        utils.EIS_object(), utils.EIS_sequence(),
+        utils.Protocol_custom_objects()
+    ]
+    for obj in class_objects:
+        for att in dir(obj):
+            if not att.startswith('_'):
+                setattr(obj, att, 0)
+        for att in dir(obj):
+            if not att.startswith('_'):
+                assert getattr(obj, att) == 0
+
 @pytest.fixture
 def acoustic_data():
     df_acoust = pd.read_parquet('tests/example_acoust.parquet')
@@ -22,20 +41,4 @@ def test_smooth_by_convolution(acoustic_data):
                     s0, window_len, kernel_type, passes)
                 assert ( len(s0) == len(s0_smooth) )
 
-def test_attribute_assignment():
-    class_objects = [
-        utils.Pulse(), utils.PulseSequence(),
-        utils.Acoustic_Pulse(), utils.Acoustic_PulseSequence(),
-        utils.EIS_object(), utils.EIS_sequence(),
-        utils.Protocol_custom_objects()
-    ]
-    for obj in class_objects:
-        for att in dir(obj):
-            if not att.startswith('_'):
-                setattr(obj, att, 0)
-        for att in dir(obj):
-            if not att.startswith('_'):
-                assert getattr(obj, att) == 0
 
-def test_root_dir():
-    assert(utils.root_dir() != None)
