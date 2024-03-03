@@ -36,3 +36,6 @@ def test_attribute_assignment():
         for att in dir(obj):
             if not att.startswith('_'):
                 assert getattr(obj, att) == 0
+
+def test_root_dir():
+    assert(utils.root_dir() != None)
