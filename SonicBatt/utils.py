@@ -154,23 +154,3 @@ def smooth_by_convolution(s, window_len=11, kernel_type='rectangular', passes=10
         s_smooth = s_smooth[window_len:-window_len]
         s_extended = extend_signal(s_smooth)
     return(s, s_smooth)
-
-def df_multiindex(test_id, test_dir):
-    import pandas as pd
-    file_name = '{}_cycling_acoustic_pnts.pkl'.format(test_id)
-    file_path = test_dir + '\\' + file_name
-    df_cycling_acoustic_pnts = pd.read_pickle(file_path)
-
-    file_name = '{}_acoustics.npy'.format(test_id)
-    file_path = test_dir + '\\' + file_name
-    acoustic_y = np.load(file_path)
-
-    #To construct dataframe out of acoustic y:
-    acoustic_headings = list(range(0,4000))
-    acoustic_headings = list(map(str, acoustic_headings))
-    df_acoustics = pd.DataFrame(data = acoustic_y, columns = acoustic_headings)
-
-    #To concatenate df_cycling_acoustic_pnts and df_acoustics:
-    df_combined = pd.concat([df_cycling_acoustic_pnts, df_acoustics], axis = 1, keys = ['cycling', 'acoustics'])
-    return df_combined
-

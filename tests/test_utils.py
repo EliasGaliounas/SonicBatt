@@ -7,6 +7,14 @@ def test_root_dir():
     my_dir = utils.root_dir()
     assert(my_dir != None)
 
+    # Test the exception
+    from unittest.mock import patch
+    import subprocess
+    with patch('subprocess.check_output') as mock_check_output:
+        mock_check_output.side_effect = subprocess.CalledProcessError(1, 'git')
+        my_dir = utils.root_dir()
+        assert my_dir is None
+
 def test_attribute_assignment():
     class_objects = [
         utils.Pulse(), utils.PulseSequence(),
@@ -21,7 +29,6 @@ def test_attribute_assignment():
         for att in dir(obj):
             if not att.startswith('_'):
                 assert getattr(obj, att) == 0
-
 @pytest.fixture
 def acoustic_data():
     df_acoust = pd.read_parquet('tests/example_acoust.parquet')
