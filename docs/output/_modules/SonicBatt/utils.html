@@ -29,14 +29,23 @@
           <div class="body" role="main">
             
   <h1>Source code for SonicBatt.utils</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="Pulse"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.Pulse">[docs]</a><span></span><span class="k">class</span> <span class="nc">Pulse</span><span class="p">:</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="root_dir"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.root_dir">[docs]</a><span class="k">def</span> <span class="nf">root_dir</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">subprocess</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;rev-parse&#39;</span><span class="p">,</span> <span class="s1">&#39;--show-toplevel&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">root</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Pulse"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.Pulse">[docs]</a><span class="k">class</span> <span class="nc">Pulse</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Contains information for single pulses.::</span>
+<span class="sd">    Contains information for single pulses.</span>
 <span class="sd">    &quot;C&quot; indicates a step where current is not zero.</span>
 <span class="sd">    &quot;R&quot; indicates a rest step.&lt;br&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="c1"># Index labelling:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_start_ind</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_end_ind</span> <span class="o">=</span> <span class="kc">None</span>
@@ -63,6 +72,121 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">C_start_R0_dt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_end_R0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C_end_R0_dt</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PulseSequence"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.PulseSequence">[docs]</a><span class="k">class</span> <span class="nc">PulseSequence</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1">#Pulse_list will be a list of Pulse objects    </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Pulse_list</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Acoustic_Pulse"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.Acoustic_Pulse">[docs]</a><span class="k">class</span> <span class="nc">Acoustic_Pulse</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Contains information for single pulses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Index labelling:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pre_start_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pre_end_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_start_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_end_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_start_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_end_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Temperature info:</span>
+        <span class="c1"># During pulse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_temp_mean</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_temp_stdev</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_temp_max</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_temp_min</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_start_temp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_end_temp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Relaxation post pulse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_temp_mean</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_temp_stdev</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_temp_max</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_temp_min</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_start_temp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_end_temp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Relaxation pre pulse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pre_temp_mean</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># OCV &amp; mAh info:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pre_end_OCV</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_pre_end_mAh</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_start_OCV</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_start_mAh</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_end_OCV</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_post_end_mAh</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Acoustic_PulseSequence"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.Acoustic_PulseSequence">[docs]</a><span class="k">class</span> <span class="nc">Acoustic_PulseSequence</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1">#Pulse_list will be a list of Pulse objects    </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_ind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Acoustic_Pulse_list</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="EIS_object"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.EIS_object">[docs]</a><span class="k">class</span> <span class="nc">EIS_object</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eis_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eis_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eis_start_datetime</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_ind</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Latest index from df_cycling</span>
+        <span class="c1"># For studies doing EIS repetitions:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_step</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="EIS_sequence"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.EIS_sequence">[docs]</a><span class="k">class</span> <span class="nc">EIS_sequence</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EIS_list</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Protocol_custom_objects"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.Protocol_custom_objects">[docs]</a><span class="k">class</span> <span class="nc">Protocol_custom_objects</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cell_Q</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">P_char_chrg_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">P_char_dischrg_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">EIS_char_chrg_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">EIS_char_dischrg_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">EIS_other_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Acoustic_char_chrg_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Acoustic_char_dischrg_seq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_id</span> <span class="o">=</span> <span class="n">test_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_Q</span> <span class="o">=</span> <span class="n">cell_Q</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P_char_chrg_seq</span> <span class="o">=</span> <span class="n">P_char_chrg_seq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P_char_dischrg_seq</span> <span class="o">=</span> <span class="n">P_char_dischrg_seq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EIS_char_chrg_seq</span> <span class="o">=</span> <span class="n">EIS_char_chrg_seq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EIS_char_dischrg_seq</span> <span class="o">=</span> <span class="n">EIS_char_dischrg_seq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EIS_other_seq</span> <span class="o">=</span> <span class="n">EIS_other_seq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Acoustic_char_chrg_seq</span> <span class="o">=</span> <span class="n">Acoustic_char_chrg_seq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Acoustic_char_dischrg_seq</span> <span class="o">=</span> <span class="n">Acoustic_char_dischrg_seq</span></div>
+
+<div class="viewcode-block" id="smooth_by_convolution"><a class="viewcode-back" href="../../index.html#SonicBatt.utils.smooth_by_convolution">[docs]</a><span class="k">def</span> <span class="nf">smooth_by_convolution</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">window_len</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">kernel_type</span><span class="o">=</span><span class="s1">&#39;rectangular&#39;</span><span class="p">,</span> <span class="n">passes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    - s is a single signal.</span>
+<span class="sd">    It is prepared by introducing reflected copies of the signal in both ends so that</span>
+<span class="sd">    transient parts are minimized in the begining and end part of the output signal.</span>
+<span class="sd">    Those copies have length window_len.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">window_len</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># !!! Window_len must be an odd number.</span>
+    <span class="k">def</span> <span class="nf">extend_signal</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        mirrored parts of the signal are introduced at the beginning and end of it.</span>
+<span class="sd">        the mirroring is wrt both axes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">extra_front_bit</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="n">window_len</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">extra_tail_bit</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="n">window_len</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">s_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">extra_front_bit</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">extra_tail_bit</span><span class="p">]</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">s_extended</span><span class="p">)</span>
+    <span class="c1"># ---------------------------------------</span>
+    <span class="n">s_extended</span> <span class="o">=</span> <span class="n">extend_signal</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kernel_type</span><span class="o">==</span><span class="s1">&#39;rectangular&#39;</span><span class="p">:</span>
+        <span class="c1"># Equivalent to a moving average</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">window_len</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kernel_type</span><span class="o">==</span><span class="s1">&#39;triangular&#39;</span><span class="p">:</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_len</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_len</span><span class="o">/</span><span class="mi">2</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kernel_type</span><span class="o">==</span><span class="s1">&#39;gaussian&#39;</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">window_len</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">window_len</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">passes</span><span class="p">):</span>
+        <span class="n">s_smooth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">s_extended</span><span class="p">,</span> <span class="n">kernel</span> <span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+        <span class="n">s_smooth</span> <span class="o">=</span> <span class="n">s_smooth</span><span class="p">[</span><span class="n">window_len</span><span class="p">:</span><span class="o">-</span><span class="n">window_len</span><span class="p">]</span>
+        <span class="n">s_extended</span> <span class="o">=</span> <span class="n">extend_signal</span><span class="p">(</span><span class="n">s_smooth</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s_smooth</span><span class="p">)</span></div>
+
+
 </pre></div>
 
           </div>
