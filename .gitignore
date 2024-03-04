@@ -1,5 +1,6 @@
 __pycache__/
-Raw data/
+studies/degradation/Raw data/
+studies/degradation/Ancillary data/
 .vscode/
 .coverage
 .coverage.xml

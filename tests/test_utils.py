@@ -2,6 +2,7 @@ from SonicBatt import utils
 import numpy as np
 import pandas as pd
 import pytest
+import os
 
 def test_root_dir():
     my_dir = utils.root_dir()
@@ -20,7 +21,7 @@ def test_attribute_assignment():
         utils.Pulse(), utils.PulseSequence(),
         utils.Acoustic_Pulse(), utils.Acoustic_PulseSequence(),
         utils.EIS_object(), utils.EIS_sequence(),
-        utils.Protocol_custom_objects()
+        utils.Protocol_custom_objects(), utils.Acoustic_p2C()
     ]
     for obj in class_objects:
         for att in dir(obj):
@@ -48,4 +49,32 @@ def test_smooth_by_convolution(acoustic_data):
                     s0, window_len, kernel_type, passes)
                 assert ( len(s0) == len(s0_smooth) )
 
+def test_signal_peaks(acoustic_data):
+    df_acoust, _ = acoustic_data
+    signals = df_acoust['acoustics'].to_numpy()
+    peak_heights, peak_tofs = utils.signal_peaks(signals)
+    assert(peak_heights.shape == peak_tofs.shape)
 
+def test_df_with_peaks():
+    data_path = os.path.join(os.getcwd(), 'tests')
+    test_id = 'example_2'
+    #
+    for my_list in ([], [1,3,5], [1,3,5]):
+        df = utils.df_with_peaks(data_path=data_path, test_id=test_id,
+                slicing_indices=my_list, ignore_ind_list=my_list)
+        first_row_headings = df.columns.levels[0]
+        for item in ['cycling', 'acoustics', 'peak_heights', 'peak_tofs']:
+            assert (item in first_row_headings)
+    #
+    n_peaks = 8
+    df = utils.df_with_peaks(data_path=data_path, test_id=test_id,
+                             n_peaks=n_peaks)
+    first_row_headings = df.columns.levels[0]
+    for item in ['cycling', 'acoustics', 'peak_heights', 'peak_tofs']:
+        assert (item in first_row_headings)
+
+def test_create_custom_object():
+    data_path = os.path.join(os.getcwd(), 'tests')
+    test_id = 'example_3'
+    custom_object = utils.create_custom_object(test_id, data_path)
+    assert (type(custom_object) == type(utils.Protocol_custom_objects()))
