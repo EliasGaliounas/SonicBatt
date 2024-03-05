@@ -1,6 +1,7 @@
 __pycache__/
 studies/degradation/Raw data/
 studies/degradation/Ancillary data/
+studies/degradation/.ipynb_checkpoints/
 .vscode/
 .coverage
 .coverage.xml

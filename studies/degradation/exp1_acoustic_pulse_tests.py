@@ -3,7 +3,7 @@ from SonicBatt import utils
 import os
 import pandas as pd
 import pyarrow.parquet as pq
-import numpy as npl
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
