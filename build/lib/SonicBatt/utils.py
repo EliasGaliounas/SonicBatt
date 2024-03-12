@@ -346,7 +346,7 @@ def save_figure(fig, visualisation_path, save_filename, format='pdf'):
 def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
     drc=False, peak_heights=False, peak_tofs=False, crop_ind=False, temp_lims=(18,32),
     figsize = (12,4.8), dpi=150, annot_pos=(None, None), title=None,
-    save_dir=None, save_name=None, time_step=2.5e-03, fps=30):
+    save_dir=None, save_name=None, time_step=2.5e-03):
     """
     https://jckantor.github.io/CBE30338/A.03-Animation-in-Jupyter-Notebooks.html
     """
@@ -482,6 +482,6 @@ def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
     ani = animation.FuncAnimation(f, drawframe, interval = 20,
         blit=True, save_count=len(anim_indices))
     if save_name != None:
-        ani.save(os.path.join(save_dir, save_name)+'.mp4', dpi = dpi, fps=fps)
+        ani.save(os.path.join(save_dir, save_name)+'.mp4', dpi = dpi)
     else:
         return ani

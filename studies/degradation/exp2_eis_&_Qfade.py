@@ -12,7 +12,9 @@ from mpl_toolkits.axes_grid1.inset_locator import (InsetPosition, mark_inset)
 from matplotlib.ticker import FormatStrFormatter
 
 root_dir = utils.root_dir()
-data_path = os.path.join(root_dir, 'studies', 'degradation', 'Raw Data')
+study_path = os.path.join(root_dir, 'studies', 'degradation')
+data_path = os.path.join(study_path, 'Raw Data')
+visualistion_path = os.path.join(study_path, 'Visualisation')
 database = pd.read_excel(os.path.join(data_path, 'database.xlsx'))
 degr_tests = database.loc[database['test_type']=='degradation_exp2'].reset_index(drop=True)
 
@@ -143,6 +145,9 @@ cb = f.colorbar(cm.ScalarMappable(norm=norm, cmap=temp_colorsheme), ax = axs[1],
             cax = axColor) #location='right'
 cb.set_label(label='Temp ($^\circ$C)')
 
+save_filename = 'Exp2_eis'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
+
 # %%
 # Capacity fade (Discharge - at the rate of 1C)
 discharge_steps_1c = range(67, 124, 3)
@@ -182,5 +187,7 @@ cb = f.colorbar(cm.ScalarMappable(norm=norm, cmap=temp_colorsheme), ax =ax,
             format = FormatStrFormatter("%.1f"))
 cb.set_label(label='Temp ($^\circ$C)')
 
-# %%
+save_filename = 'Exp2_Qfade'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
+# %%

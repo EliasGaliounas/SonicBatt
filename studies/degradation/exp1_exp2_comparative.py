@@ -3,14 +3,13 @@ from SonicBatt import utils
 import os
 import json
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-from matplotlib.pyplot import cm
 
 root_dir = utils.root_dir()
-ancillary_data_path = os.path.join(root_dir, 'studies', 'degradation', 'Ancillary Data')
-
+study_path = os.path.join(root_dir, 'studies', 'degradation')
+data_path = os.path.join(study_path, 'Raw Data')
+visualistion_path = os.path.join(study_path, 'Visualisation')
+ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
 
 with open(os.path.join(ancillary_data_path,'stats_exp1.json'), 'r') as fp:
     stats_exp1 = json.load(fp)
@@ -137,10 +136,12 @@ handles.append(mlines.Line2D([], [], marker=marker['exp2'], linestyle='None',
 f.legend(handles=handles, loc='center left',
          bbox_to_anchor=(1.0, 0.55), markerscale=1)
 
-# %%
+save_filename = 'Exp1_vs_Exp2_correlations'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
+
 # %%
 # Macro-trends: Standard Deviations
-f, axs = plt.subplots(2, len(quantities), sharex='row', sharey='row',
+f, axs = plt.subplots(2, len(quantities), sharex='row', sharey=False,
         figsize=(8,3), constrained_layout=True, dpi=300)
 f.patch.set_facecolor('white')
 
@@ -195,5 +196,8 @@ handles.append(mlines.Line2D([], [], marker=marker['exp2'], linestyle='None',
 
 f.legend(handles=handles, loc='center left',
          bbox_to_anchor=(1.0, 0.55), markerscale=1)
+
+save_filename = 'Exp1_vs_Exp2_stds'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 # %%

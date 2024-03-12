@@ -12,8 +12,10 @@ from mpl_toolkits.axes_grid1.inset_locator import (InsetPosition, mark_inset)
 from matplotlib.ticker import FormatStrFormatter
 
 root_dir = utils.root_dir()
-data_path = os.path.join(root_dir, 'studies', 'degradation', 'Raw Data')
-ancillary_data_path = os.path.join(root_dir, 'studies', 'degradation', 'Ancillary Data')
+study_path = os.path.join(root_dir, 'studies', 'degradation')
+data_path = os.path.join(study_path, 'Raw Data')
+visualistion_path = os.path.join(study_path, 'Visualisation')
+ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
 
 database = pd.read_excel(os.path.join(data_path, 'database.xlsx'))
 degr_tests = database.loc[database['test_type']=='degradation_exp1'].reset_index(drop=True)
@@ -121,11 +123,16 @@ cb = f.colorbar(cm.ScalarMappable(norm=norm, cmap=temp_colorsheme), ax =axs[2],
 cb.set_label(label='Temp ($^\circ$C)')
 #
 axs[0].set_ylabel('V(V)')
-axs[1].set_title('Last Acoustic Peak')
+axs[0].set_title('(a)')
+axs[1].set_title("'Back wall echo' peak\n(b)")
+axs[2].set_title('(c)')
 axs[1].set_ylabel('Time of Flight (μs)')
 axs[2].set_ylabel('Time of Flight (μs)')
 axs[-1].set_xlabel('Time (hours)')
 f.align_ylabels()
+
+save_filename = 'Exp1_full_protocols'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 # %%
 # Isolate pulses
@@ -375,21 +382,29 @@ def plot_degr_pulses(color_by = 'cycle', y_quant = 'tof',
     f.align_ylabels()
     f.supxlabel('Time (min)')
     if y_quant == 'tof':
-        f.supylabel('ΔToF (μs)')
+        f.supylabel('ΔToF (nanosecs)')
     elif y_quant == 'temperature':
         f.supylabel('ΔTemp ($^\circ$C)')
     
     return f
 
 f = plot_degr_pulses(color_by = 'cycle', Pulse_direction = 'both', time_window='short')
+save_filename = 'Exp1_pulses_tof_short'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 f = plot_degr_pulses(color_by = 'cycle', Pulse_direction = 'both', time_window='short',
                      y_quant='temperature')
+save_filename = 'Exp1_pulses_temp_short'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 f = plot_degr_pulses(color_by = 'cycle', Pulse_direction = 'both', time_window='long')
+save_filename = 'Exp1_pulses_tof_long'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 f = plot_degr_pulses(color_by = 'cycle', Pulse_direction = 'both', time_window='long',
                      y_quant='temperature')
+save_filename = 'Exp1_pulses_temp_long'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 # %%
 # For later labelling
@@ -533,12 +548,18 @@ def pairwise_plot(y_quant = 'cycle', standardise=True, Pulse_direction = 'dischr
     }
 
     axs[0,0].set_yticks([0, 100, 200, 300])
+    if standardise == False:
+        axs[0,0].set_xticks(ocvs_dischrg)
 
     return f, stats
 
 f, _ = pairwise_plot(y_quant = 'cycle', standardise=False)
+save_filename = 'Exp1_pairwise'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 f, stats = pairwise_plot(y_quant = 'cycle', standardise=True)
+save_filename = 'Exp1_pairwise_standardised'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 f, stats_pct = pairwise_plot(y_quant = 'cycle', standardise=False, percentages=True)
 
@@ -599,6 +620,9 @@ axs[2,0].set_ylabel('Spearman\ncorrelation',
 
 f.supxlabel('Mean OCV before pulse')
 
+save_filename = 'Exp1_correlations'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
+
 # %%
 # Macro-trends: Standard Deviations
 f, axs = plt.subplots(2, len(quantities), sharex='row', sharey='row',
@@ -645,6 +669,9 @@ axs[1,0].set_ylabel('(b)',
     labelpad=15, ha='center', va='center', rotation=0)
 f.align_ylabels()
 f.supylabel('Standard deviation\n(σ)', ha='center')
+
+save_filename = 'Exp1_stds'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
 
 # %%
 # Save some data

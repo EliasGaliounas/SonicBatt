@@ -12,7 +12,9 @@ from mpl_toolkits.axes_grid1.inset_locator import (InsetPosition, mark_inset)
 from matplotlib.ticker import FormatStrFormatter
 
 root_dir = utils.root_dir()
-data_path = os.path.join(root_dir, 'studies', 'degradation', 'Raw Data')
+study_path = os.path.join(root_dir, 'studies', 'degradation')
+data_path = os.path.join(study_path, 'Raw Data')
+visualistion_path = os.path.join(study_path, 'Visualisation')
 database = pd.read_excel(os.path.join(data_path, 'database.xlsx'))
 degr_tests = database.loc[database['test_type']=='degradation_exp1'].reset_index(drop=True)
 degr_tests_cycling = database.loc[database['test_type']=='degradation_cycling_exp1'].reset_index(drop=True)
@@ -67,7 +69,6 @@ for i in range(len(degr_tests)):
 
 # %%
 # Nyquist plots coloured by cycle and temperature
-
 f, axs = plt.subplots(3, 2, figsize=(7,4), dpi=300,
                 sharex=True, sharey=True, constrained_layout=True)
 f.patch.set_facecolor('white')
@@ -146,6 +147,9 @@ f.supxlabel('$\mathrm{Z_{re} (\Omega)}$')
 f.supylabel('$\mathrm{-Z_{im} (\Omega)}$')
 f.align_ylabels()
 
+save_filename = 'Exp1_eis'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
+
 # %%
 # Capacity fade
 capacities_1c = []
@@ -189,3 +193,8 @@ cb = f.colorbar(cm.ScalarMappable(norm=norm, cmap=temp_colorsheme), ax =ax,
             ticks=[min(temperatures_1c), 22, max(temperatures_1c)],
             format = FormatStrFormatter("%.1f"))
 cb.set_label(label='Temp ($^\circ$C)')
+
+save_filename = 'Exp1_Qfade'
+utils.save_figure(f, visualistion_path, save_filename, 'png')
+
+# %%

@@ -1,8 +1,10 @@
 name: SonicBatt_env
 channels:
   - anaconda
+  - conda-forge
 dependencies:
   - python=3.8
   - pip
   - pip:
     - -r requirements.txt
+  - ffmpeg>=4.3.1
