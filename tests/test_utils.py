@@ -92,4 +92,18 @@ def test_animate_signals(acoustic_data):
             signals = signals, 
             peak_heights=peak_heights,
             peak_tofs=peak_tofs)
-    assert (ani != None)    
+    assert (ani != None)
+
+def test_animate_signals2(acoustic_data):
+    # Frequency domain
+    df_acoust, _ = acoustic_data
+    signals = df_acoust['acoustics'].to_numpy()
+    #
+    time_step=2.5e-03
+    freqs_MHz = np.fft.rfftfreq(signals.shape[1], time_step)
+    fft_coeffs = np.fft.rfft(signals, axis=1)
+    fft_magns = np.abs(fft_coeffs)
+    ani = utils.animate_signals(df_cycling = df_acoust['cycling'],
+                      signals = signals, fft_magns=fft_magns,
+                      freqs_MHz=freqs_MHz)
+    assert (ani != None)
