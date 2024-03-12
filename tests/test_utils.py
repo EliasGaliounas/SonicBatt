@@ -78,3 +78,18 @@ def test_create_custom_object():
     test_id = 'example_3'
     custom_object = utils.create_custom_object(test_id, data_path)
     assert (type(custom_object) == type(utils.Protocol_custom_objects()))
+
+def test_animate_signals(acoustic_data):
+    df_acoust, _ = acoustic_data
+    signals = df_acoust['acoustics'].to_numpy()
+    peak_heights, peak_tofs = utils.signal_peaks(signals) 
+    # Only waveforms   
+    ani = utils.animate_signals(df_cycling = df_acoust['cycling'],
+                    signals = signals)
+    assert (ani != None)
+    # Waveforms and peaks
+    ani = utils.animate_signals(df_cycling = df_acoust['cycling'],
+            signals = signals, 
+            peak_heights=peak_heights,
+            peak_tofs=peak_tofs)
+    assert (ani != None)    
