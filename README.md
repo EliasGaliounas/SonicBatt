@@ -20,8 +20,8 @@ https://eliasgaliounas.github.io/SonicBatt/
 
 <h1 align="left">Published studies</h1>
 1) Investigations into the acoustic response of batteries during dynamic tests, through life
-   - Manuscript available at: (Add link)
-   - Dataset available at: https://rdr.ucl.ac.uk/articles/dataset/Acoustic_response_of_batteries_during_dynamic_tests_through_life/25343527/1
-   - Instructions:
-      - Download dataset, unzip, and place into the studies/degradation directory. I.e. there will now be a folder with all the data at studies/degradation/Raw data
-      - Run each notebook inside studies/degradation to produce the main plots of the study
+- Manuscript available at: (Add link)
+- Dataset available at: https://rdr.ucl.ac.uk/articles/dataset/Acoustic_response_of_batteries_during_dynamic_tests_through_life/25343527/1
+- Instructions:
+   - Download dataset, unzip, and place into the studies/degradation directory. I.e. there will now be a folder with all the data at studies/degradation/Raw data
+   - Run each notebook inside studies/degradation to produce the main plots of the study
