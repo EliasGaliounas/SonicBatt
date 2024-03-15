@@ -98,6 +98,7 @@ for exp in ['exp1', 'exp2']:
             color=marker_c[exp], s=marker_s[exp], marker=marker[exp])
         axs[2,j].scatter(ocvs_pre_mean[exp], Spearman[exp][quantity],
             color=marker_c[exp], s=marker_s[exp], marker=marker[exp])    
+        axs[0,j].set_title(quantity_labels_unitless[quantity], fontsize=10)
 
 axs[0,0].set_xlim(3.5, 4.25)
 axs[0,0].set_xticks([3.6, 3.8, 4.0, 4.2])

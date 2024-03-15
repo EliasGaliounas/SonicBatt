@@ -149,7 +149,6 @@ def make_grids(Pulse_direction = 'dischrg', Peak = -1):
     """
     Pulse_direction: 'dischrg' | 'chrg'
     """
-
     quantities = ['times', 'voltages', 'temps', 'tofs', # Will be represented as lists
                     'pre_pulse_ocv', 'post_pulse_ocv', # Will be numbers
                     'tofs_pre_means', 'tofs_post_means', 'tofs_delta_state',

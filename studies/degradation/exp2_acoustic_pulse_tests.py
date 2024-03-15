@@ -683,4 +683,5 @@ with open(os.path.join(ancillary_data_path,'stats_exp2.json'), 'w') as fp:
     json.dump(stats, fp)
 with open(os.path.join(ancillary_data_path,'stats_pct_exp2.json'), 'w') as fp:
     json.dump(stats_pct, fp)
+
 # %%
