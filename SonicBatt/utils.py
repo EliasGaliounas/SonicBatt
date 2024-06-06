@@ -3,8 +3,10 @@ import os
 import json
 import pandas as pd
 import pyarrow.parquet as pq
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
+import tensorflow as tf
 
 def root_dir():
     import subprocess
@@ -342,6 +344,32 @@ def save_figure(fig, visualisation_path, save_filename, format='pdf'):
         save_filename += '.pdf'
     fig.savefig(os.path.join(visualisation_path, save_filename), bbox_inches='tight', format=format)
 
+def make_spectrogram(waveform, frame_length=501, frame_step=5,
+                     pad_end=False, crop_freq = 21):
+    # Convert the waveform to a spectrogram via a STFT.
+    spectrogram = tf.signal.stft(
+        waveform, frame_length=frame_length, frame_step=frame_step, pad_end=pad_end)
+    # Obtain the magnitude of the STFT.
+    spectrogram = tf.abs(spectrogram)
+    # Add a `channels` dimension, so that the spectrogram can be used
+    # as image-like input data with convolution layers (which expect
+    # shape (`batch_size`, `height`, `width`, `channels`).
+    spectrogram = spectrogram[..., tf.newaxis]
+    # print(spectrogram.shape)
+    # print('N features = {}'.format(spectrogram.shape[0]*spectrogram.shape[1]))
+    if crop_freq != None:
+        spectrogram = spectrogram[:, 1:crop_freq]
+    else:
+        spectrogram = spectrogram[:, 1:]
+    return spectrogram
+
+def spectrogram_data_for_plot(spectrogram):
+    # If needed, remove the last axis which is for ML
+    if len(spectrogram.shape) > 2:
+        assert len(spectrogram.shape) == 3
+        spectrogram = np.squeeze(spectrogram, axis=-1)
+    log_spec = np.log(spectrogram.T + np.finfo(float).eps)
+    return log_spec
 
 def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
     drc=False, peak_heights=False, peak_tofs=False, crop_ind=False, temp_lims=(18,32),
@@ -366,11 +394,11 @@ def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
 
     # Create the background frame
     #----------------------------
-    if type(fft_magns) == bool:
+    if (type(fft_magns) == bool):
         f, axs = plt.subplots(1,3, gridspec_kw={'width_ratios': [8, 0.25, 0.25]},
             constrained_layout = True, figsize = figsize)
         if annot_pos == (None, None):
-            annot_pos = (0.7, 0.9)
+            annot_pos = (0.7, 0.9)       
     else:
         fft_magns /= 1000 # To make the axes plotting it look nicer.
         f, axs = plt.subplots(1,4, gridspec_kw={'width_ratios': [4, 0.25, 0.25, 4]},
@@ -401,7 +429,7 @@ def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
         signals[anim_indices].max() + offset)
     axs[0].set_xlim(0, 10)
     axs[0].set_xlabel('ToF (μs)')
-    axs[0].set_ylabel('Acoustic Intensity (a.u.)')
+    axs[0].set_ylabel('Acoustic Amplitude (a.u.)')
     # axs[1] (bar)
     axs[1].set_ylim(2.5,4.4)
     # axs[2] (bar)
@@ -430,7 +458,7 @@ def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
     # animation function. This is called sequentially
     # -----------------------------------------------
     def drawframe(n):
-        # Have a progress bar shown
+        # Print progress information
         if n/len(anim_indices)*100 > globals()["pct_progress"]:
             print('{pct:.2f} %'.format(pct = pct_progress))
             globals()["pct_progress"] = next(progress_iterator)
@@ -485,3 +513,352 @@ def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
         ani.save(os.path.join(save_dir, save_name)+'.mp4', dpi = dpi, fps=fps)
     else:
         return ani
+
+def animate_spectrograms(df_cycling, signals, specs, save_dir=None, save_name=None,
+                        dpi=150, fps=30, temp_lims=(18,32),
+                        frame_length=501, frame_step=5, crop_freq = 21,
+                        title = None):
+    
+    """"
+    specs means spectrograms (a 3D numpy array)
+    """
+    time_step=2.5e-03
+    freqs = np.fft.rfftfreq(n=frame_length, d = time_step)[1:crop_freq]
+    voltages = df_cycling["V(V)"].to_numpy()
+    temperatures = df_cycling["Temp(degC)"].to_numpy()
+    rates = df_cycling["C-Rate"].to_numpy()
+    if 'CV' in df_cycling['Regime']:
+        cv_filter = df_cycling['Regime']=='CV'
+        rates[cv_filter]='CV'
+    rate_cols = {0: 'r', 0.05: 'y', 0.2: 'b', 0.5: 'g', 0.75: 'k', 1.0: 'm', 'CV': 'c'}
+    annot_pos = (0.7, 0.9) 
+
+    # Create the background frame
+    f, axs = plt.subplots(1,4, figsize=(12, 4.8),
+            gridspec_kw={'width_ratios': [4, 0.25, 0.25, 4]}, constrained_layout = True)
+    f.patch.set_facecolor('white')
+    # Line
+    line_time_domain, = axs[0].plot([], [], c = 'tab:orange')
+    # Bars
+    barV, = axs[1].bar("V", height = 0)
+    barT, = axs[2].bar("T", height = 0)
+    # Spectrogram
+    specs_log_max = np.log(specs.max())
+    specs_log_min = np.log(specs.min())
+
+    init_spectrogram = specs[0]
+    log_spec = spectrogram_data_for_plot(init_spectrogram)
+    # Plot the x values in the middle of the time window they represent.
+    X = (758*time_step + 
+         (np.array(range(log_spec.shape[1]))*frame_step)*time_step + 
+         round(frame_length/2)*time_step)
+    freqs = np.fft.rfftfreq(n=frame_length, d = time_step)[1:crop_freq] #MHz
+    pcm = axs[3].pcolormesh(X, freqs, log_spec)
+
+    my_text = axs[0].text(annot_pos[0], annot_pos[1], '',
+        transform=axs[0].transAxes, backgroundcolor = 'white') 
+
+    # Axes limits
+    axs[0].set_xlim(time_step*758, 10)
+    axs[1].set_ylim(2.5,4.4)
+    axs[2].set_ylim(temp_lims)
+    axs[3].set_xlim(time_step*758, 10)
+    time_domain_value_range = signals.max() - signals.min()
+    offset = 0.1 * time_domain_value_range
+    axs[0].set_ylim(signals.min() - offset,       
+        signals.max() + offset)
+    
+    # Axes labels
+    axs[0].set_xlabel('ToF (μs)')
+    axs[0].set_ylabel('Acoustic Amplitude (a.u.)')
+    axs[3].set_xlabel('ToF (μs)')
+    axs[3].set_ylabel('Frequency (MHz)')
+
+    # General
+    axs[0].grid()
+    title_font_size = 18
+    f.suptitle(title, fontsize=title_font_size)
+
+    # TO help produce a progress update
+    progress_iterator = iter(np.arange(0.5, 100.5, 0.5))
+    global pct_progress
+    pct_progress = 0
+
+    def drawframe(n):
+        # Print progress information
+        if n/len(df_cycling)*100 > globals()["pct_progress"]:
+            print('{pct:.2f} %'.format(pct = pct_progress))
+            globals()["pct_progress"] = next(progress_iterator)
+
+        x_time_domain = np.arange(len(signals[n])) * time_step + time_step # The first datapoint logged is at time_step, not zero.
+        y_time_domain = signals[n]
+        line_time_domain.set_data(x_time_domain + time_step*758, y_time_domain)
+
+        volts = voltages[n]
+        barV.set_height(volts)
+
+        temp = temperatures[n]
+        barT.set_height(temp)
+
+        spec = specs[n]
+        log_spec = spectrogram_data_for_plot(spec)
+        # pcm.set_data(X, Y, log_spec)
+        pcm.set_array(log_spec.ravel())
+        pcm.set_clim(vmin=np.min(log_spec), vmax=np.max(log_spec))
+        # pcm.set_clim(vmin=specs_log_min, vmax=specs_log_max)
+
+        rate = rates[n]
+        text_col = rate_cols[rate]
+        plt.setp(my_text, c = text_col)
+        if rate != 'CV':
+            rate_annotation = 'Signal Id: %s \nRate: %s C'%(n, rate)
+        else:
+            rate_annotation = 'Signal Id: %s \nRate: %s'%(n, rate)
+        my_text.set_text(rate_annotation) 
+
+        return line_time_domain, barV, barT, pcm,
+
+    import matplotlib.animation as animation
+    # interval is the delay between frames in milliseconds.
+    ani = animation.FuncAnimation(f, drawframe, interval = 20,
+        blit=True, save_count=len(df_cycling))
+    if save_name != None:
+        ani.save(os.path.join(save_dir, save_name)+'.mp4', dpi = dpi, fps=fps)
+    else:
+        return ani
+
+#CCCV data plotting------------------------------------
+#------------------------------------------------------
+def colorscheme(n_increments, cmap='Blues'):
+    return iter(
+        mpl.colormaps[cmap](np.linspace(0.2, 1, n_increments))
+    )
+
+def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1], xlims = (0, 250), figsize=(15, 14.4), dpi=300,
+    domain = 'time', relative_peaks = True, freqs_1d = None, freq_ind_pair = (),
+    title_font_size = 18, subtitle_font_size = 16, axlabels_font_size = 14, ticksize=12, label_text_size=14,
+    save_filename=None, visualisation_path=None, return_axes=False):
+    """
+    df must be a pandas DataFrame which is multiindex with:
+    df.columns.levels[0] = Index(['cycling', 'acoustics', 'peak_heights', 'peak_tofs',
+        'fft_magns', 'fft_freq_indices_sorted'], dtype='object')
+    cell: A list of cell names as defined in the database.
+    cell_aliases: A dictionary where the keys are the cell names and the values are cell_aliases
+    - which will be used instead of the cell names used in the database.
+    Options:
+    domain: 'time' or 'freq'
+        if 'time'; 
+        - relative_peaks: Bool
+        if 'freq'; must also provide an array 'freqs_id' of the frequencies in MHz
+        - freq_ind_pair: provide the indices of two frequencies to plot.
+    """
+    if len(c_rates)==1:
+        c_rate_for_title = 'C-rate = {} C.'.format(c_rates[0])
+    elif len(c_rates)==2:
+        c_rate_for_title  = 'C-rates = {}, {} C.'.format(c_rates[0], c_rates[1])
+    elif len(c_rates)==3:
+        c_rate_for_title  = 'C-rates = {}, {}, {} C.'.format(c_rates[0], c_rates[1], c_rates[2])
+    #
+    if domain=='time':
+        n_peaks = df['peak_heights'].shape[1]
+        if relative_peaks==True:
+            n_rows = 7
+            peak_2_tof_row = 4
+            peak_last_tof_row = 5
+            y_labels = [
+                'Ampl. (a.u.)\n(second peak)',
+                'Ampl. (a.u.)\n(last peak)',
+                'Ampl. Diff.\n(second & last\npeaks)',
+                'ToF (μs)\n(second peak)',
+                'ToF (μs)\n(last peak)',
+                'ToF Diff.\n(second & last\npeaks)',
+            ]
+        elif relative_peaks==False:
+            n_rows = 5
+            peak_2_tof_row = 3
+            peak_last_tof_row = 4
+            y_labels = [
+                'Ampl. (a.u.)\n(second peak)',
+                'Ampl. (a.u.)\n(last peak)',
+                'ToF (μs)\n(second peak)',
+                'ToF (μs)\n(last peak)',
+            ]
+        title = 'Time-domain peaks. {}\nSecond and last acoustic peaks.'.format(c_rate_for_title)
+
+    elif domain=='freq':
+        if freq_ind_pair != ():
+            n_rows = 4
+            y_labels = [
+                'FFT magn. (a.u. x1000)\n({:.2f} MHz)'.format(freqs_1d[freq_ind_pair[0]]),
+                'FFT magn. (a.u.x1000)\n({:.2f} MHz)'.format(freqs_1d[freq_ind_pair[1]]),
+                'FFT magn. Diff between\nselected freq. components'
+            ]
+        title = 'Freq-domain. {}'.format(c_rate_for_title)
+    #
+    f, axs = plt.subplots(n_rows,7, sharex='col', sharey='row', figsize=figsize, constrained_layout=True, dpi=dpi)
+    f.patch.set_facecolor('white')
+    for j, c_rate in enumerate(c_rates):
+        filter1 = df['cycling']['C-Rate'] == c_rate
+        cycles = df['cycling'].loc[filter1, 'Cycle'].unique()
+        if c_rate == 0.2:
+            col_scheme = 'Purples'
+        elif c_rate == 0.5:
+            col_scheme = 'Oranges'
+        elif c_rate ==1:
+            col_scheme = 'Blues'
+        for i in range(len(cells)):
+            cell_id = cells[i]
+            filter2 = df['cycling']['Cell_ID'] == cell_id
+            color = colorscheme(len(cycles), col_scheme)
+            for cycle in cycles:
+                c = next(color)
+                label = cycle+1 # To display cycles starting at 1 instead of 0
+                filter3 = df['cycling']['Cycle'] == cycle
+                filter = filter1 & filter2 & filter3
+                x = df['cycling'].loc[filter, x_quantity].to_numpy()
+                # For each C rate use a separate axs to produce labels.
+                if j == i:
+                    if j == 0:
+                        axs[0,i].plot(
+                            x,
+                            df['cycling'].loc[filter, 'V(V)'], c=c, label=label,
+                            )
+                    elif j == 1:
+                        axs[0,i].plot(
+                            x,
+                            df['cycling'].loc[filter, 'V(V)'], c=c, label=label,
+                            )
+                    elif j == 2:
+                        axs[0,i].plot(
+                            x,
+                            df['cycling'].loc[filter, 'V(V)'], c=c, label=label,
+                            )
+                else:
+                    axs[0,i].plot(
+                        x,
+                        df['cycling'].loc[filter, 'V(V)'], c=c,
+                        )             
+                if domain == 'time':
+                    axs[1,i].plot(
+                        x,
+                        df['peak_heights'].loc[filter, '1'], c=c,
+                    )
+                    axs[2,i].plot(
+                        x,
+                        df['peak_heights'].loc[filter, str(n_peaks-1)], c=c,
+                    )
+                    if relative_peaks:
+                        axs[3,i].plot(
+                            x,
+                            (df['peak_heights'].loc[filter, str(n_peaks-1)]-
+                            df['peak_heights'].loc[filter, '1']), c=c,
+                        )
+                        axs[6,i].plot(
+                            x,
+                            (df['peak_tofs'].loc[filter, str(n_peaks-1)]-
+                            df['peak_tofs'].loc[filter, '1']), c=c,
+                        )
+                    axs[peak_2_tof_row,i].plot(
+                        x,
+                        df['peak_tofs'].loc[filter, '1'], c=c,
+                    )
+                    axs[peak_last_tof_row,i].plot(
+                        x,
+                        df['peak_tofs'].loc[filter, str(n_peaks-1)], c=c,
+                    )
+                elif domain == 'freq':
+                    if freq_ind_pair != ():
+                        axs[1,i].plot(
+                            x, df['fft_magns'].loc[filter, str(freq_ind_pair[0])]/1000, c=c,
+                        )
+                        axs[2,i].plot(
+                            x, df['fft_magns'].loc[filter, str(freq_ind_pair[1])]/1000, c=c,
+                        )
+                        axs[3,i].plot(
+                            x,
+                            (df['fft_magns'].loc[filter, str(freq_ind_pair[0])]-
+                            df['fft_magns'].loc[filter, str(freq_ind_pair[1])])/1000, c=c,
+                        )
+        #
+        if j==0:
+            handles, _ = axs[0,0].get_legend_handles_labels()
+            f.legend(handles = handles, 
+                loc='center left', bbox_to_anchor=(1, 0.8), ncol=2, title="Cycle ({}C)".format(c_rate), 
+                fontsize=label_text_size, title_fontsize=label_text_size)
+        elif j ==1:
+            handles, _ = axs[0,1].get_legend_handles_labels()
+            f.legend(handles = handles, 
+                loc='center left', bbox_to_anchor=(1, 0.5), ncol=2, title="Cycle ({}C)".format(c_rate), 
+                fontsize=label_text_size, title_fontsize=label_text_size)
+        elif j ==2:
+            handles, _ = axs[0,2].get_legend_handles_labels()
+            f.legend(handles = handles,
+                loc='center left', bbox_to_anchor=(1, 0.2), ncol=2, title="Cycle ({}C)".format(c_rate), 
+                fontsize=label_text_size, title_fontsize=label_text_size)
+    #
+    if 'SoC' in x_quantity:
+        x_label = 'SoC'
+    else:
+        x_label = x_quantity
+    axs[0,0].set_ylabel('V(V)', fontsize=axlabels_font_size)
+    for i in range(n_rows-1):
+        axs[i+1, 0].set_ylabel(y_labels[i], fontsize=axlabels_font_size)
+    for i in range(len(cells)):
+        cell_id = cells[i]
+        axs[-1, i].set_xlabel(x_label, fontsize=axlabels_font_size)
+        axs[-1, i].set_xlim(xlims)
+        axs[0,i].set_title('Cell {}'.format(cell_aliases[cell_id]), fontsize=subtitle_font_size)
+    
+    mpl.rc('xtick', labelsize=ticksize)
+    mpl.rc('ytick', labelsize=ticksize)
+    f.align_ylabels(axs[:, 0])
+    f.suptitle(title, fontsize=title_font_size)
+    if save_filename != None:
+        save_path = os.path.join(visualisation_path, save_filename)
+        f.savefig(save_path, bbox_inches='tight')
+    if return_axes:
+        return(f, axs)
+
+def plot_cycling_data(df_cycling, df_peak_tofs, f, axs):
+    # Plot Cycling data only
+    filter = df_cycling['Cycle'] != 999
+    unique_cycles = df_cycling.loc[filter, 'Cycle'].unique()
+    for cycle in unique_cycles:
+        filter_cycle = df_cycling['Cycle']==cycle
+        temp_df = df_cycling.loc[filter_cycle]
+        time_h = temp_df['Time(s)'].to_numpy()/3600
+        axs[0].plot(time_h, temp_df['C-Rate'], c='k')
+        axs[1].plot(time_h, temp_df['V(V)'], c='tab:blue')
+        axs[2].plot(time_h, temp_df['Temp(degC)'], c='tab:blue')
+        axs[3].plot(time_h, temp_df['Q(mAh)'], c='tab:blue')
+        filter_pol = temp_df['Polarisation'] == '-'
+        capacity = temp_df.loc[filter_pol, 'Q(mAh)'].iloc[0] - temp_df.loc[filter_pol, 'Q(mAh)'].iloc[-1]
+        capacity_time = temp_df.loc[filter_pol, 'Time(s)'].iloc[-1]/3600
+        # Capacity_datetime = temp_df.loc[filter, 'Datetime'].iloc[-1]
+        axs[4].scatter(capacity_time, capacity, c='tab:blue')
+        # Back wall echo peak
+        echo_peak = df_peak_tofs.loc[filter_cycle, '8'].to_numpy()
+        axs[5].plot(time_h, echo_peak, c='tab:blue')
+
+    # Draw a line at Q=0
+    xlims = axs[3].get_xlim()
+    axs[3].plot([xlims[0], xlims[1]], [0,0], c='k', linestyle=(0, (1, 10)))
+    axs[3].set_xlim(xlims)
+    # Define consistent y limits for the Temperature, Q and capacity axes
+    axs[2].set_ylim(18, 27)
+    axs[2].set_yticks([18, 21, 24, 27])
+    axs[3].set_ylim(-10, 245)
+    axs[3].set_yticks([0, 100, 200, 245])
+    axs[4].set_ylim(125, 235)
+    axs[4].set_yticks([125, 165, 200, 235])
+    #
+    axs[0].set_ylabel('C-rate')
+    axs[1].set_ylabel('V (V)')
+    axs[2].set_ylabel('Temp ($^\circ$C)')
+    axs[3].set_ylabel('Q (mAh)')
+    axs[4].set_ylabel('Capacity\n(mAh)')
+    axs[5].set_ylabel('Back wall\necho peak\nToF (μs)')
+    axs[0].set_yticks([0.2, 0.5, 1], ['C/5', 'C/2', '1C'])
+    axs[-1].set_xlabel('Time (h)')
+    f.align_ylabels()
+

@@ -3,6 +3,15 @@ studies/degradation/Raw data/
 studies/degradation/Ancillary data/
 studies/degradation/.ipynb_checkpoints/
 studies/degradation/Visualisation/
+studies/multi-cell cccv/Raw data/
+studies/multi-cell cccv/Ancillary data/
+studies/multi-cell cccv/Visualisation/
+studies/multi-cell cccv/Cluster/
+studies/multi-cell cccv/Regression/
+studies/multi-cell cccv/Regression_2/
+studies/multi-cell cccv/Classification/
+studies/multi-cell cccv/Unsupervised/
+plt.clf()
 .vscode/
 .coverage
 .coverage.xml
