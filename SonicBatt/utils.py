@@ -812,10 +812,10 @@ def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1
     mpl.rc('xtick', labelsize=ticksize)
     mpl.rc('ytick', labelsize=ticksize)
     f.align_ylabels(axs[:, 0])
-    f.suptitle(title, fontsize=title_font_size)
+    # f.suptitle(title, fontsize=title_font_size)
     if save_filename != None:
         save_path = os.path.join(visualisation_path, save_filename)
-        f.savefig(save_path, bbox_inches='tight')
+        f.savefig(save_path, bbox_inches='tight', format='pdf')
     if return_axes:
         return(f, axs)
 
@@ -832,7 +832,8 @@ def plot_cycling_data(df_cycling, df_peak_tofs, f, axs):
         axs[2].plot(time_h, temp_df['Temp(degC)'], c='tab:blue')
         axs[3].plot(time_h, temp_df['Q(mAh)'], c='tab:blue')
         filter_pol = temp_df['Polarisation'] == '-'
-        capacity = temp_df.loc[filter_pol, 'Q(mAh)'].iloc[0] - temp_df.loc[filter_pol, 'Q(mAh)'].iloc[-1]
+        capacity = (temp_df.loc[filter_pol, 'Q(mAh)'].iloc[0] 
+                    - temp_df.loc[filter_pol, 'Q(mAh)'].iloc[-1])
         capacity_time = temp_df.loc[filter_pol, 'Time(s)'].iloc[-1]/3600
         # Capacity_datetime = temp_df.loc[filter, 'Datetime'].iloc[-1]
         axs[4].scatter(capacity_time, capacity, c='tab:blue')
@@ -848,17 +849,16 @@ def plot_cycling_data(df_cycling, df_peak_tofs, f, axs):
     axs[2].set_ylim(18, 27)
     axs[2].set_yticks([18, 21, 24, 27])
     axs[3].set_ylim(-10, 245)
-    axs[3].set_yticks([0, 100, 200, 245])
-    axs[4].set_ylim(125, 235)
+    axs[3].set_yticks([0, 80, 160, 245])
+    axs[4].set_ylim(120, 235)
     axs[4].set_yticks([125, 165, 200, 235])
     #
     axs[0].set_ylabel('C-rate')
-    axs[1].set_ylabel('V (V)')
-    axs[2].set_ylabel('Temp ($^\circ$C)')
-    axs[3].set_ylabel('Q (mAh)')
+    axs[1].set_ylabel('V')
+    axs[2].set_ylabel('Temp\n($^\circ$C)')
+    axs[3].set_ylabel('Q\n(mAh)')
     axs[4].set_ylabel('Capacity\n(mAh)')
     axs[5].set_ylabel('Back wall\necho peak\nToF (μs)')
     axs[0].set_yticks([0.2, 0.5, 1], ['C/5', 'C/2', '1C'])
     axs[-1].set_xlabel('Time (h)')
     f.align_ylabels()
-

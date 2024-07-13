@@ -3,14 +3,17 @@ studies/degradation/Raw data/
 studies/degradation/Ancillary data/
 studies/degradation/.ipynb_checkpoints/
 studies/degradation/Visualisation/
-studies/multi-cell cccv/Raw data/
-studies/multi-cell cccv/Ancillary data/
-studies/multi-cell cccv/Visualisation/
-studies/multi-cell cccv/Cluster/
-studies/multi-cell cccv/Regression/
-studies/multi-cell cccv/Regression_2/
-studies/multi-cell cccv/Classification/
-studies/multi-cell cccv/Unsupervised/
+studies/multi-cell_ml/Raw data/
+studies/multi-cell_ml/Ancillary data/
+studies/multi-cell_ml/Visualisation/
+studies/multi-cell_ml/Exploratory/
+studies/multi-cell_ml/Cluster/
+studies/multi-cell_ml/Regression/
+studies/multi-cell_ml/Classification/
+studies/multi-cell_ml/Unsupervised/
+studies/multi-cell_ml/Exploratory/
+studies/multi-cell_ml/Obsolete/
+studies/multi-cell_ml/Models/
 plt.clf()
 .vscode/
 .coverage
