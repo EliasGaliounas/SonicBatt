@@ -20,12 +20,12 @@ https://eliasgaliounas.github.io/SonicBatt/
 
 <h1 align="left">Published studies and reproducibility</h1>
 
-1) Investigations into the Dynamic Acoustic Response of Lithium-Ion Batteries During Lifetime Testing
+1) **Investigations into the Dynamic Acoustic Response of Lithium-Ion Batteries During Lifetime Testing**
    - Manuscript DOI: [10.1149/1945-7111/ad5d21](https://doi.org/10.1149/1945-7111/ad5d21)
    - Dataset available at the [UCL Research Data Repository](https://rdr.ucl.ac.uk/articles/dataset/Acoustic_response_of_batteries_during_dynamic_tests_through_life/25343527/1)
    - Instructions:
       - Download dataset, unzip, and place into the studies/degradation directory. There will now be a folder with all the data at: studies/degradation/Raw data
       - Run the notebooks inside studies/degradation sequentially to process the dataset, create ancillary files, and produce the main plots of the publication.
 
-2) Distinctiveness of acoustic signals from multiple lithium-ion batteries and challenges to generalised state estimators
+2) **Distinctiveness of acoustic signals from multiple lithium-ion batteries and challenges to generalised state estimators**
    - To be released soon
