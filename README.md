@@ -1,5 +1,5 @@
 <h1 align="center">SonicBatt</h1>
-[![codecov](https://codecov.io/gh/EliasGaliounas/SonicBatt/graph/badge.svg?token=O7VLF7G0P9)](https://codecov.io/gh/EliasGaliounas/SonicBatt)
+[![codecov](https://codecov.io/gh/EliasGaliounas/SonicBatt/graph/badge.svg?token=O7VLF7G0P9)](https://codecov.io/gh/EliasGaliounas/SonicBatt)</h1>
 
 SonicBatt is an installable python package that can be used for the visualisation and processing of acoustic signals obtained from battery studies.
 This repository supports the reproducibility of academic publications, which serve as case studies for SonicBatt.
