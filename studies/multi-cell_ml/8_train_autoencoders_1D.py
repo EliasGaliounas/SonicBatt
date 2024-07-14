@@ -1,7 +1,5 @@
-"""
-modelling for the cluster
-"""
 # %%
+from SonicBatt import utils
 import os
 import json
 import pandas as pd
@@ -12,37 +10,35 @@ from tensorflow import keras
 from keras import layers
 from keras.models import Model
 
-# ---- IO for local use ----multi-cell_ml
-from SonicBatt import utils
 root_dir = utils.root_dir()
 study_path = os.path.join(root_dir, 'studies', 'multi-cell_ml')
-cluster_data_path = os.path.join(study_path, 'Cluster')
-IO_path = cluster_data_path
-spectrogram_data_path = os.path.join(study_path, 'Ancillary Data')
-# --------------------------
+data_path = os.path.join(study_path, 'Raw Data')
+visualistion_path = os.path.join(study_path, 'Visualisation')
+ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
+unsupervised_models_path = os.path.join(study_path, 'Models', 'Unsupervised')
 
-models_path = IO_path
-df_dtypes_filepath = os.path.join(cluster_data_path, 'df_dtypes.json')
-with open(df_dtypes_filepath, 'r') as f:
-    df_dtypes = json.load(f)
-df_dtypes = {eval(key): value for key, value in df_dtypes.items()}
-df = pd.read_csv(os.path.join(cluster_data_path, 'df_cccv.csv'), header=[0, 1],
-                  dtype=df_dtypes)
-print('Checking if dataframe was properly constructed')
-print('head')
-print(df['cycling'].head())
+database = pd.read_excel(os.path.join(data_path, 'database.xlsx'))
+df_cell_aliases =  pd.read_excel(os.path.join(data_path, 'database.xlsx'),
+                              sheet_name='cell_aliases')
+cell_aliases = {}
+for _, row in df_cell_aliases.iterrows():
+    cell_aliases[row['cell_id']] = row['cell_alias']
 
-spectrograms = np.load(os.path.join(spectrogram_data_path, 'spectrograms.npy'))
+parquet_filename = 'signals_peaks_fft.parquet'
+parquet_filepath = os.path.join(ancillary_data_path, parquet_filename)
+df = pd.read_parquet(parquet_filepath)
+# Get rid of the invariable parts of the acoustic signals
+df = df.drop(columns = [('acoustics', str(i)) for i in range(758)])
+spectrograms = np.load(os.path.join(ancillary_data_path, 'spectrograms.npy'))
 
-# %%
-n_epochs = 8000
+flattened_spectrograms = spectrograms.reshape(
+    spectrograms.shape[0],
+    spectrograms.shape[1] * spectrograms.shape[2])
 
-with open(os.path.join(cluster_data_path,'cells_together_split.json'), 'r') as fp:
+with open(os.path.join(ancillary_data_path,'cells_together_split.json'), 'r') as fp:
     cells_together_split = json.load(fp)
-with open(os.path.join(cluster_data_path,'cells_separated_splits.json'), 'r') as fp:
-    cells_separated_splits = json.load(fp)
 
-label_column = ('cycling', 'V(V)')
+n_epochs = 8000
 
 # %%
 # ML helper functions
@@ -67,38 +63,23 @@ def schedule1(epoch):
     """
     No decay
     """
-    start_lr = 0.001
+    start_lr = 0.0005
     end_lr = 0.001
-    rampup_epochs = 300
-    n_epochs = 8000
-    return lr_linear_decay(epoch, start_lr, end_lr, rampup_epochs, n_epochs)
-
-def schedule2(epoch):
-    start_lr = 0.001
-    end_lr = start_lr/5
     rampup_epochs = 300
     n_epochs = 8000
     return lr_linear_decay(epoch, start_lr, end_lr, rampup_epochs, n_epochs)
 
 # %%
 data_configs = {
-    # 'B': ['peak_tofs'],
-    # 'C': ['peak_tofs', 'peak_heights'],
     'D': ['acoustics'],
-    # 'E': ['fft_magns'],
     'F': ['acoustics', 'fft_magns'],
     'G': 'spectrograms'
 }
 
-def config_data(data_config, Fold = None):
-    if Fold == None:
-        train_indices = cells_together_split['train']
-        val_indices = cells_together_split['val']
-        test_indices = cells_together_split['test']
-    else:
-        train_indices = cells_separated_splits[Fold]['train']
-        val_indices = cells_separated_splits[Fold]['val']
-        test_indices = cells_separated_splits[Fold]['test']        
+def config_data(data_config):
+    train_indices = cells_together_split['train']
+    val_indices = cells_together_split['val']
+    test_indices = cells_together_split['test']      
     #
     if data_config != 'G':
         feature_columns = data_configs[data_config]
@@ -109,12 +90,8 @@ def config_data(data_config, Fold = None):
         X_train = spectrograms[train_indices]
         X_val = spectrograms[val_indices]
         X_test = spectrograms[test_indices]
-    
-    y_train = df.loc[train_indices, label_column].to_numpy().reshape(-1,1)
-    y_val = df.loc[val_indices, label_column].to_numpy().reshape(-1,1)
-    y_test = df.loc[test_indices, label_column].to_numpy().reshape(-1,1)
     #
-    return (X_train, y_train, X_val, y_val, X_test, y_test)
+    return (X_train, X_val, X_test)
 
 def get_scalers(X_train):
     min_values = np.min(X_train, axis=0)
@@ -127,10 +104,6 @@ def scale_data(data, min_values, range_values):
     data_scaled = (data - min_values) / range_values
     return(data_scaled)
 
-def unscale_data(scaled_data, min_values, range_values):
-    data_unscaled = (scaled_data * range_values) + min_values
-    return(data_unscaled)
-
 # %%
 class Autoencoder(Model):
     def __init__(self, latent_dim, shape):
@@ -139,9 +112,10 @@ class Autoencoder(Model):
         self.shape = shape
         self.encoder = tf.keras.Sequential([
             layers.Flatten(),
-            layers.Dense(1024, activation='relu'),
-            layers.Dense(512, activation='relu'),
-            layers.Dense(256, activation='relu'),
+            layers.Dropout(0.2), # Equivalent to adding Masking Noise
+            layers.Dense(1024, activation='relu'), layers.Dropout(0.2),
+            layers.Dense(512, activation='relu'), layers.Dropout(0.2),
+            layers.Dense(256, activation='relu'), layers.Dropout(0.2),
             layers.Dense(128, activation='relu'),
             layers.Dense(64, activation='relu'),
             layers.Dense(32, activation='relu'),
@@ -154,13 +128,13 @@ class Autoencoder(Model):
             layers.Dense(16, activation='relu'),
             layers.Dense(32, activation='relu'),
             layers.Dense(64, activation='relu'),
-            layers.Dense(128, activation='relu'),
-            layers.Dense(256, activation='relu'),
-            layers.Dense(512, activation='relu'),
+            layers.Dense(128, activation='relu'), layers.Dropout(0.2),
+            layers.Dense(256, activation='relu'), layers.Dropout(0.2),
+            layers.Dense(512, activation='relu'), layers.Dropout(0.2),
             layers.Dense(1024, activation='relu'),
             layers.Dense(tf.math.reduce_prod(shape).numpy(), activation='sigmoid'),
             layers.Reshape(shape)
-        ])    
+        ])
     def call(self, x):
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
@@ -175,7 +149,7 @@ for data_config in data_configs.keys():
         del(model)
 
     feature_columns = data_configs[data_config]
-    X_train, y_train, X_val, y_val, X_test, y_test = config_data(data_config)
+    X_train, X_val, X_test = config_data(data_config)
 
     min_values, range_values = get_scalers(X_train)
     X_train_scaled = scale_data(X_train, min_values, range_values)
@@ -190,7 +164,7 @@ for data_config in data_configs.keys():
         loss='mean_absolute_error',
     )
 
-    lr_callback = tf.keras.callbacks.LearningRateScheduler(schedule2)
+    lr_callback = tf.keras.callbacks.LearningRateScheduler(schedule1)
     fitparams = {'epochs':n_epochs,'batch_size':64,'verbose':2, 'callbacks':[lr_callback, earlystop_callback]}
     history = model.fit(
         X_train_scaled, X_train_scaled, 
@@ -198,7 +172,7 @@ for data_config in data_configs.keys():
         **fitparams)
 
     model_name = 'autoencoder_sch2_{}_scaled'.format(data_config)
-    savedir = os.path.join(models_path, model_name)
+    savedir = os.path.join(unsupervised_models_path, model_name)
     save_dir_model = os.path.join(savedir, model_name)
     model.save(save_dir_model)
     save_dir_history = os.path.join(savedir, 'training_history.json')

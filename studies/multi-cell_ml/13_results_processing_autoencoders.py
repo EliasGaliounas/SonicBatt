@@ -1,4 +1,4 @@
-# %% 
+# %%
 from SonicBatt import utils
 import os
 import pandas as pd
@@ -17,7 +17,7 @@ root_dir = utils.root_dir()
 study_path = os.path.join(root_dir, 'studies', 'multi-cell_ml')
 data_path = os.path.join(study_path, 'Raw Data')
 ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
-unsupervised_models_path = os.path.join(study_path, 'Unsupervised')
+unsupervised_models_path = os.path.join(study_path, 'Models', 'Unsupervised')
 autoencoders_path = os.path.join(unsupervised_models_path, 'Autoencoders')
 
 parquet_filename = 'signals_peaks_fft.parquet'
@@ -47,7 +47,6 @@ for _, row in df_cell_aliases.iterrows():
 label_column = ('cycling', 'Cell_ID')
 df[label_column] = df[label_column].replace(cell_aliases)
 y = df.loc[:, label_column].to_numpy()
-#
 
 # %%
 data_configs = {
@@ -109,76 +108,50 @@ def unscale_data(scaled_data, min_values, range_values):
 
 # %%
 # Scaled
-data_config = 'G'
-X_train, _, X_val, _, X_test, y_test = config_data(data_config)
+model_names = [
+    'autoencoder_sch2_D_scaled',
+    'autoencoder_sch2_F_scaled',
+    'autoencoder_sch2_G_scaled',
+    'conv_autoencoder_sch2_G_scaled'
+]
+data_configs_short = ['D', 'F', 'G', 'G']
 
-min_values, range_values = get_scalers(X_train)
-del(X_train, X_val, spectrograms)
-# X_train_scaled = scale_data(X_train, min_values, range_values)
-X_test_scaled = scale_data(X_test, min_values, range_values)
+for i in range(len(model_names)):
+    data_config = data_configs_short[i]
+    model_name = model_names[i]
+    print('Working on: {}'.format(model_name))
+    model_dir = os.path.join(autoencoders_path, model_name)
+    model = load_model(os.path.join(model_dir, model_name))
 
-if (data_config == 'G'):
-    del (df)
+    X_train, _, _, _, X_test, _ = config_data(data_config)
+    min_values, range_values = get_scalers(X_train)
+    X_test_scaled = scale_data(X_test, min_values, range_values)
 
-# model_name = 'autoencoder_sch2_{}_scaled'.format(data_config)
-model_name = 'conv_autoencoder_sch2_{}_scaled'.format(data_config)
+    if model_name != 'conv_autoencoder_sch2_{}_scaled'.format(data_config):
+        projected = model.encoder(X_test_scaled).numpy()
+    else:
+        del(df, X_train, spectrograms)
+        for i in range(12):
+            print('Progress: {} out of 12 parts for this autoencoder'.format(i))
+            if i == 0:
+                projected = model.encoder(X_test_scaled[(1000*i):(1000*(i+1))]).numpy()
+            else:
+                projected_small = model.encoder(X_test_scaled[(1000*i):(1000*(i+1))]).numpy()
+                projected = np.concatenate((projected, projected_small), axis=0)
+        projected_small = model.encoder(X_test_scaled[1000*(i+1):]).numpy()
+        projected = np.concatenate((projected, projected_small), axis=0)
 
-model_dir = os.path.join(autoencoders_path, model_name)
-model = load_model(os.path.join(model_dir, model_name))
+    if data_config != 'G':
+        decoded_signals = model.decoder(projected).numpy()
+        decoded_signals = unscale_data(decoded_signals, min_values, range_values)
 
-if model_name != 'conv_autoencoder_sch2_{}_scaled'.format(data_config):
-    projected = model.encoder(X_test_scaled).numpy()
-else:
-    for i in range(12):
-        print(i)
-        if i == 0:
-            projected = model.encoder(X_test_scaled[(1000*i):(1000*(i+1))]).numpy()
-        else:
-            projected_small = model.encoder(X_test_scaled[(1000*i):(1000*(i+1))]).numpy()
-            projected = np.concatenate((projected, projected_small), axis=0)
-    projected_small = model.encoder(X_test_scaled[1000*(i+1):]).numpy()
-    projected = np.concatenate((projected, projected_small), axis=0)
+        f, ax = plt.subplots(1, 1, figsize=(6, 6), constrained_layout=True)
+        ax.plot(np.arange(len(X_test[0])), X_test[0], color='tab:blue',
+                label='original')
+        ax.plot(np.arange(decoded_signals.shape[1]), decoded_signals[0], color='tab:orange',
+                label='reconstructed')
 
-if data_config != 'G':
-    decoded_signals = model.decoder(projected).numpy()
-    decoded_signals = unscale_data(decoded_signals, min_values, range_values)
-
-    f, ax = plt.subplots(1, 1, figsize=(6, 6), constrained_layout=True)
-    ax.plot(np.arange(len(X_test[0])), X_test[0], color='tab:blue')
-    ax.plot(np.arange(decoded_signals.shape[1]), decoded_signals[0], color='tab:orange')
-
-save_dir = os.path.join(autoencoders_path, '{}_projected.npy'.format(model_name))
-np.save(save_dir, projected)
-
-# %%
-colors = plt.cm.tab10.colors # Get colors from tab10
-cmap = mcolors.ListedColormap(colors[:7][::-1]) # Reverse them to look prettier
-
-s = 5
-f, axs = plt.subplots(1, 1, figsize=(6, 6), constrained_layout=True)
-axs.scatter(projected[:, 0], projected[:, 1],
-    c=y_test, edgecolor='none', alpha=0.5, cmap=cmap,s=s)
-
-sm = ScalarMappable(cmap=cmap)
-sm.set_array(y)
-cbar = f.colorbar(sm, ax=axs, label='Cell id')
-cbar.set_ticks(np.unique(y_test))
-
-# axs.set_xscale('log')
-# axs.set_yscale('log')
-
-axs.set_xscale('symlog')
-axs.set_yscale('symlog')
-
-# %%
-for layer in model.encoder.layers:
-    config = layer.get_config()
-    layer_type = layer.__class__.__name__
-    activation = config.get('activation', 'None')
-    units = config.get('units', 'N/A')  # Get the number of units if available
-    # if layer_type in ['Conv2D', 'Conv1D', 'Conv3D', 'Conv2DTranspose']:
-    #         filters = config.get('filters', 'N/A')
-    #         units  = filters
-    print(f'Layer: {layer_type}, Units: {units}, Activation: {activation}')
+    save_dir = os.path.join(autoencoders_path, '{}_projected.npy'.format(model_name))
+    np.save(save_dir, projected)
 
 # %%

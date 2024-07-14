@@ -14,7 +14,7 @@ study_path = os.path.join(root_dir, 'studies', 'multi-cell_ml')
 data_path = os.path.join(study_path, 'Raw Data')
 visualistion_path = os.path.join(study_path, 'Visualisation')
 ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
-models_path = os.path.join(study_path, 'Classification')
+models_path = os.path.join(study_path, 'Models', 'Classification')
 
 database = pd.read_excel(os.path.join(data_path, 'database.xlsx'))
 df_cell_aliases =  pd.read_excel(os.path.join(data_path, 'database.xlsx'),
@@ -22,7 +22,6 @@ df_cell_aliases =  pd.read_excel(os.path.join(data_path, 'database.xlsx'),
 cell_aliases = {}
 for _, row in df_cell_aliases.iterrows():
     cell_aliases[row['cell_id']] = row['cell_alias']
-
 
 parquet_filename = 'signals_peaks_fft.parquet'
 parquet_filepath = os.path.join(ancillary_data_path, parquet_filename)
@@ -41,8 +40,6 @@ y -= 1
 
 with open(os.path.join(ancillary_data_path,'cells_together_split.json'), 'r') as fp:
     cells_together_split = json.load(fp)
-with open(os.path.join(ancillary_data_path,'cells_separated_splits.json'), 'r') as fp:
-    cells_separated_splits = json.load(fp)
 
 n_epochs = 8000
 
@@ -52,7 +49,7 @@ n_epochs = 8000
 earlystop_callback = tf.keras.callbacks.EarlyStopping(
     monitor="val_loss",
     min_delta=0,
-    patience=100,
+    patience=500,
     verbose=0,
     mode="min",
     baseline=None,
@@ -65,16 +62,6 @@ def lr_linear_decay(epoch, start_lr, end_lr, rampup_epochs, n_epochs):
     else:
         decay = (start_lr - end_lr) / (n_epochs - rampup_epochs)
         return(start_lr - decay*(epoch-rampup_epochs))
-
-def schedule1(epoch):
-    """
-    No decay
-    """
-    start_lr = 0.001
-    end_lr = 0.001
-    rampup_epochs = 300
-    n_epochs = 8000
-    return lr_linear_decay(epoch, start_lr, end_lr, rampup_epochs, n_epochs)
 
 def schedule2(epoch):
     start_lr = 0.001
@@ -154,47 +141,39 @@ def train_eval_model(representation, X_train, y_train, X_val, y_val, X_test, sav
 representations = {
     'ffnn_1x2_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 2, 'schedule': schedule2},
     'ffnn_1x5_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 5, 'schedule': schedule2},
-    # 'ffnn_1x10_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 10, 'schedule': schedule2},
-    # 'ffnn_1x20_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 20, 'schedule': schedule2},
-    # 'ffnn_1x50_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 50, 'schedule': schedule2},
-    # 'ffnn_1x75_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 75, 'schedule': schedule2},
-    # 'ffnn_1x100_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 100, 'schedule': schedule2},
-    # 'ffnn_2x10_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 10, 'schedule': schedule2},
-    # 'ffnn_2x20_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 20, 'schedule': schedule2},
-    # 'ffnn_2x50_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 50, 'schedule': schedule2},
-    # 'ffnn_2x75_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 75, 'schedule': schedule2},
-    # 'ffnn_2x100_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 100, 'schedule': schedule2},
+    'ffnn_1x10_sch2': {'repr_type': 'DL', 'depth': 1, 'nodes_per_layer': 10, 'schedule': schedule2},
+    'ffnn_2x2_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 2, 'schedule': schedule2},
+    'ffnn_2x5_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 5, 'schedule': schedule2},
+    'ffnn_2x10_sch2': {'repr_type': 'DL', 'depth': 2, 'nodes_per_layer': 10, 'schedule': schedule2},
 }
 
 data_configs = {
     'A': [('peak_tofs', '8'), ('peak_heights', '8')],
-    # 'B': ['peak_tofs'],
-    # 'C': ['peak_tofs', 'peak_heights'],
-    # 'D': ['acoustics'],
-    # 'E': ['fft_magns'],
-    # 'F': ['acoustics', 'fft_magns']
+    'B': ['peak_tofs'],
+    'C': ['peak_tofs', 'peak_heights'],
+    'D': ['acoustics'],
 }
 
 # %%
-data_config = 'A'
-feature_columns = data_configs[data_config]
-for representation in representations.keys():
-    model_name = '{}_{}'.format(representation, data_config)
-    train_indices = cells_together_split['train']
-    val_indices = cells_together_split['val']
-    test_indices = cells_together_split['test']
-    X_train = df.loc[train_indices, feature_columns].to_numpy()
-    y_train = df.loc[train_indices, label_column].to_numpy().reshape(-1,1)
-    X_val = df.loc[val_indices, feature_columns].to_numpy()
-    y_val = df.loc[val_indices, label_column].to_numpy().reshape(-1,1)
-    X_test = df.loc[test_indices, feature_columns].to_numpy()
-    y_test = df.loc[test_indices, label_column].to_numpy().reshape(-1,1)
+for data_config in data_configs.keys():
+    feature_columns = data_configs[data_config]
+    for representation in representations.keys():
+        model_name = '{}_{}'.format(representation, data_config)
+        train_indices = cells_together_split['train']
+        val_indices = cells_together_split['val']
+        test_indices = cells_together_split['test']
+        X_train = df.loc[train_indices, feature_columns].to_numpy()
+        y_train = df.loc[train_indices, label_column].to_numpy().reshape(-1,1)
+        X_val = df.loc[val_indices, feature_columns].to_numpy()
+        y_val = df.loc[val_indices, label_column].to_numpy().reshape(-1,1)
+        X_test = df.loc[test_indices, feature_columns].to_numpy()
+        y_test = df.loc[test_indices, label_column].to_numpy().reshape(-1,1)
 
-    if 'model' in globals():
-        del(model)
-    savedir = os.path.join(models_path, model_name)
-    pred_val, pred_test = train_eval_model(
-        representation, X_train, y_train, X_val, y_val, X_test,
-        savedir=savedir, model_name=model_name)
+        if 'model' in globals():
+            del(model)
+        savedir = os.path.join(models_path, model_name)
+        pred_val, pred_test = train_eval_model(
+            representation, X_train, y_train, X_val, y_val, X_test,
+            savedir=savedir, model_name=model_name)
 
 # %%

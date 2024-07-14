@@ -15,7 +15,7 @@ study_path = os.path.join(root_dir, 'studies', 'multi-cell_ml')
 data_path = os.path.join(study_path, 'Raw Data')
 ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
 visualistion_path = os.path.join(study_path, 'Visualisation')
-unsupervised_models_path = os.path.join(study_path, 'Unsupervised')
+unsupervised_models_path = os.path.join(study_path, 'Models', 'Unsupervised')
 autoencoders_path = os.path.join(unsupervised_models_path, 'Autoencoders')
 
 # --------------------------
@@ -25,9 +25,7 @@ parquet_filepath = os.path.join(ancillary_data_path, parquet_filename)
 df = pd.read_parquet(parquet_filepath)
 
 # Shuffle and continue
-indices_all = df.index.to_numpy().copy()
-# !!! Instead of what didn't work --> #df.copy(deep=True).index.to_numpy()
-#
+indices_all = df.index.to_numpy().copy() # !!! The following alternative didn't work --> #df.copy(deep=True).index.to_numpy()
 np.random.seed(42)
 np.random.shuffle(indices_all)
 df = df.loc[indices_all].reset_index(drop=True)

@@ -16,7 +16,7 @@ study_path = os.path.join(root_dir, 'studies', 'multi-cell_ml')
 data_path = os.path.join(study_path, 'Raw Data')
 visualistion_path = os.path.join(study_path, 'Visualisation')
 ancillary_data_path = os.path.join(study_path, 'Ancillary Data')
-models_path = os.path.join(study_path, 'Classification')
+models_path = os.path.join(study_path, 'Models', 'Classification')
 
 database = pd.read_excel(os.path.join(data_path, 'database.xlsx'))
 df_cell_aliases =  pd.read_excel(os.path.join(data_path, 'database.xlsx'),
@@ -90,52 +90,6 @@ def config_data(data_config, Fold = None):
     y_test = df.loc[test_indices, label_column].to_numpy().reshape(-1,1)
     #
     return (X_train, y_train, X_val, y_val, X_test, y_test)
-
-# %%
-data_config = 'A'
-X_train, y_train, X_val, y_val, X_test, y_test = config_data(data_config)
-
-representation = 'ffnn_2x10_sch2'
-model_name = '{}_{}'.format(representation, data_config)
-save_dir_model = os.path.join(models_path, model_name)
-model = load_model(os.path.join(save_dir_model, model_name + '.h5'))
-
-# y_pred_train = model.predict(X_train)
-# y_pred_val = model.predict(X_val)
-# y_pred_test = model.predict(X_test)
-
-probability_model = tf.keras.Sequential([model, 
-                                         tf.keras.layers.Softmax()])
-y_pred_train = np.argmax(probability_model.predict(X_train), axis=1)
-y_pred_val = np.argmax(probability_model.predict(X_val), axis=1)
-y_pred_test = np.argmax(probability_model.predict(X_test), axis=1)
-
-# %%
-import seaborn as sns
-confusion_mtx = tf.math.confusion_matrix(y_test, y_pred_test)
-plt.figure(figsize=(10, 8))
-sns.heatmap(confusion_mtx,
-            xticklabels=[0, 1, 2, 3, 4, 5, 6],
-            yticklabels=[0, 1, 2, 3, 4, 5, 6],
-            annot=True, fmt='g')
-plt.xlabel('Prediction')
-plt.ylabel('Label')
-plt.show()
-accuracy = np.sum(y_test.ravel() == y_pred_test) / len(y_test)
-
-# %%
-# Finding in the number of parameters for neural network models
-# for data_config in ['D']: #data_configs.keys():
-#     for representation in representations:
-#         model_name = '{}_{}'.format(representation, data_config)
-#         save_dir_model = os.path.join(models_path, model_name)
-        
-#         if os.path.exists(save_dir_model):
-#             model = load_model(os.path.join(save_dir_model, model_name + '.h5'))
-#             print(model.name)
-#             print(model.summary())
-#             print('---------------------------')
-#             print('')
 
 # %%
 accuracy = pd.DataFrame(
@@ -217,3 +171,34 @@ utils.save_figure(f, visualistion_path, save_filename, format='pdf')
 utils.save_figure(f, visualistion_path, save_filename, format='png')
 
 mpl.rcdefaults()
+
+# %%
+data_config = 'A'
+X_train, y_train, X_val, y_val, X_test, y_test = config_data(data_config)
+
+representation = 'ffnn_2x10_sch2'
+model_name = '{}_{}'.format(representation, data_config)
+save_dir_model = os.path.join(models_path, model_name)
+model = load_model(os.path.join(save_dir_model, model_name + '.h5'))
+
+# y_pred_train = model.predict(X_train)
+# y_pred_val = model.predict(X_val)
+# y_pred_test = model.predict(X_test)
+
+probability_model = tf.keras.Sequential([model, 
+                                         tf.keras.layers.Softmax()])
+y_pred_train = np.argmax(probability_model.predict(X_train), axis=1)
+y_pred_val = np.argmax(probability_model.predict(X_val), axis=1)
+y_pred_test = np.argmax(probability_model.predict(X_test), axis=1)
+
+import seaborn as sns
+confusion_mtx = tf.math.confusion_matrix(y_test, y_pred_test)
+plt.figure(figsize=(10, 8))
+sns.heatmap(confusion_mtx,
+            xticklabels=[0, 1, 2, 3, 4, 5, 6],
+            yticklabels=[0, 1, 2, 3, 4, 5, 6],
+            annot=True, fmt='g')
+plt.xlabel('Prediction')
+plt.ylabel('Label')
+plt.show()
+accuracy = np.sum(y_test.ravel() == y_pred_test) / len(y_test)
