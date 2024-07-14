@@ -1,5 +1,7 @@
 <h1 align="center">SonicBatt</h1>
-[![codecov](https://codecov.io/gh/EliasGaliounas/SonicBatt/branch/main/graph/badge.svg?token=O7VLF7G0P9)](https://codecov.io/gh/EliasGaliounas/SonicBatt)
+<a href="https://codecov.io/gh/EliasGaliounas/SonicBatt" > 
+ <img src="https://codecov.io/gh/EliasGaliounas/SonicBatt/branch/main/graph/badge.svg?token=O7VLF7G0P9"/> 
+ </a>
 
 <h1 align="left">Documentation</h1>
 https://eliasgaliounas.github.io/SonicBatt/
