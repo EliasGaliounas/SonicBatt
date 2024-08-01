@@ -34,22 +34,26 @@ c_rates = [0.2, 0.5, 1]
 save_filename = 'multicell_all_c_rates'
 utils.multi_cell_plot(df, selected_cells, cell_aliases, x_quantity = 'Q(mAh)',
                       c_rates = c_rates, domain = 'time', relative_peaks = True,
-                      save_filename = save_filename, visualisation_path = visualisation_path)
+                      save_filename = save_filename, visualisation_path = visualisation_path,
+                      saveformat='png')
 
 save_filename = 'multicell_0p2C'
 f = utils.multi_cell_plot(df, selected_cells, cell_aliases, x_quantity = 'Q(mAh)',
                       c_rates = [0.2], domain = 'time', relative_peaks = True,
-                      save_filename = save_filename, visualisation_path = visualisation_path)
+                      save_filename = save_filename, visualisation_path = visualisation_path,
+                      saveformat='png')
 
 save_filename = 'multicell_0p5C'
 f = utils.multi_cell_plot(df, selected_cells, cell_aliases, x_quantity = 'Q(mAh)',
                       c_rates = [0.5], domain = 'time', relative_peaks = True,
-                      save_filename = save_filename, visualisation_path = visualisation_path)
+                      save_filename = save_filename, visualisation_path = visualisation_path,
+                      saveformat='png')
 
 save_filename = 'multicell_1p0C'
 f = utils.multi_cell_plot(df, selected_cells, cell_aliases, x_quantity = 'Q(mAh)',
                       c_rates = [1], domain = 'time', relative_peaks = True,
-                      save_filename = save_filename, visualisation_path = visualisation_path)
+                      save_filename = save_filename, visualisation_path = visualisation_path,
+                      saveformat='png')
 
 
 utils.multi_cell_plot(df, selected_cells, cell_aliases, x_quantity = 'V(V)',

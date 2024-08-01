@@ -637,7 +637,7 @@ def colorscheme(n_increments, cmap='Blues'):
 def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1], xlims = (0, 250), figsize=(15, 14.4), dpi=300,
     domain = 'time', relative_peaks = True, freqs_1d = None, freq_ind_pair = (),
     title_font_size = 18, subtitle_font_size = 16, axlabels_font_size = 14, ticksize=12, label_text_size=14,
-    save_filename=None, visualisation_path=None, return_axes=False):
+    save_filename=None, visualisation_path=None, return_axes=False, saveformat='png'):
     """
     df must be a pandas DataFrame which is multiindex with:
     df.columns.levels[0] = Index(['cycling', 'acoustics', 'peak_heights', 'peak_tofs',
@@ -701,7 +701,7 @@ def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1
         filter1 = df['cycling']['C-Rate'] == c_rate
         cycles = df['cycling'].loc[filter1, 'Cycle'].unique()
         if c_rate == 0.2:
-            col_scheme = 'Purples'
+            col_scheme = 'Greens'
         elif c_rate == 0.5:
             col_scheme = 'Oranges'
         elif c_rate ==1:
@@ -814,8 +814,12 @@ def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1
     f.align_ylabels(axs[:, 0])
     # f.suptitle(title, fontsize=title_font_size)
     if save_filename != None:
+        if saveformat == 'png':
+            save_filename += '.png'
+        elif saveformat == 'pdf':
+            save_filename += '.pdf'
         save_path = os.path.join(visualisation_path, save_filename)
-        f.savefig(save_path, bbox_inches='tight', format='pdf')
+        f.savefig(save_path, bbox_inches='tight', format=saveformat)
     if return_axes:
         return(f, axs)
 
