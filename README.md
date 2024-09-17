@@ -25,7 +25,7 @@ https://eliasgaliounas.github.io/SonicBatt/
    - Manuscript DOI: [10.1149/1945-7111/ad5d21](https://doi.org/10.1149/1945-7111/ad5d21)
    - Dataset DOI: [10.5522/04/25343527.v1](https://doi.org/10.5522/04/25343527.v1)
    - Instructions:
-      - Download `Raw data.zip` from the dataset, unzip, and place into the `studies/degradation directory`. There will now be a folder with all the data at: `studies/degradation/Raw data`
+      - Download `Raw data.zip` from the dataset, unzip, and place into the `studies/degradation` directory. There will now be a folder with all the data at: `studies/degradation/Raw data`
       - Run the notebooks inside studies/degradation sequentially to process the dataset, create ancillary files, and produce the main plots of the publication.
 
 **2) The generalisation challenge: assessment of the efficacy of acoustic signals for state estimation of lithium-ion batteries via machine learning**
@@ -34,5 +34,5 @@ https://eliasgaliounas.github.io/SonicBatt/
    - Instructions:
       - Download `Raw data.zip` from the dataset, unzip, and place into the `studies/multi-cell_ml`. There will now be a folder with all the data at: `studies/multi-cell_ml/Raw data`
       - Download `Models.zip` from the dataset, unzip, and place into the `studies/multi-cell_ml`. There will now be a folder with all the data at: `studies/multi-cell_ml/Models`
-      - Run the notebooks inside studies/multi-cell_ml sequentially to process the dataset, create ancillary files, and produce the main plots of the publication. SInce you have downloaded the models, you don't need to run notebooks 4 to 10.
+      - Run the notebooks inside `studies/multi-cell_ml` sequentially to process the dataset, create ancillary files, and produce the main plots of the publication. SInce you have downloaded the models, you don't need to run notebooks 4 to 10.
       - You can also download separately the `Animations.zip` from the dataset, and then you won't need to run notebook 2.
