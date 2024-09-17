@@ -703,7 +703,7 @@ def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1
         if c_rate == 0.2:
             col_scheme = 'Greens'
         elif c_rate == 0.5:
-            col_scheme = 'Oranges'
+            col_scheme = 'Reds'
         elif c_rate ==1:
             col_scheme = 'Blues'
         for i in range(len(cells)):
@@ -780,21 +780,32 @@ def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1
                             df['fft_magns'].loc[filter, str(freq_ind_pair[1])])/1000, c=c,
                         )
         #
+        handle_linewidth = 5
+        import matplotlib.lines as mlines
         if j==0:
-            handles, _ = axs[0,0].get_legend_handles_labels()
-            f.legend(handles = handles, 
+            handles, labels = axs[0,0].get_legend_handles_labels()
+            # Adjust the linewidth of the legend lines
+            custom_handles = [mlines.Line2D([], [], color=handle.get_color(),
+                linewidth=handle_linewidth, label=label) for handle, label in zip(handles, labels)]
+            f.legend(handles = custom_handles, 
                 loc='center left', bbox_to_anchor=(1, 0.8), ncol=2, title="Cycle ({}C)".format(c_rate), 
-                fontsize=label_text_size, title_fontsize=label_text_size)
+                fontsize=label_text_size, title_fontsize=label_text_size+2)
         elif j ==1:
-            handles, _ = axs[0,1].get_legend_handles_labels()
-            f.legend(handles = handles, 
+            handles, labels = axs[0,1].get_legend_handles_labels()
+            # Adjust the linewidth of the legend lines
+            custom_handles = [mlines.Line2D([], [], color=handle.get_color(),
+                linewidth=handle_linewidth, label=label) for handle, label in zip(handles, labels)]
+            f.legend(handles = custom_handles, 
                 loc='center left', bbox_to_anchor=(1, 0.5), ncol=2, title="Cycle ({}C)".format(c_rate), 
-                fontsize=label_text_size, title_fontsize=label_text_size)
+                fontsize=label_text_size, title_fontsize=label_text_size+2)
         elif j ==2:
-            handles, _ = axs[0,2].get_legend_handles_labels()
-            f.legend(handles = handles,
+            handles, labels = axs[0,2].get_legend_handles_labels()
+            # Adjust the linewidth of the legend lines
+            custom_handles = [mlines.Line2D([], [], color=handle.get_color(),
+                linewidth=handle_linewidth, label=label) for handle, label in zip(handles, labels)]
+            f.legend(handles = custom_handles,
                 loc='center left', bbox_to_anchor=(1, 0.2), ncol=2, title="Cycle ({}C)".format(c_rate), 
-                fontsize=label_text_size, title_fontsize=label_text_size)
+                fontsize=label_text_size, title_fontsize=label_text_size+2)
     #
     if 'SoC' in x_quantity:
         x_label = 'SoC'

@@ -22,9 +22,9 @@ time_step = 2.5e-03 #microseconds
 acoustic_x = np.arange(4000) * time_step
 figsize = (8,3.5)
 
-plt.rcParams['axes.labelsize'] = 16
-plt.rcParams['xtick.labelsize'] = 14
-plt.rcParams['ytick.labelsize'] = 14
+plt.rcParams['axes.labelsize'] = 22
+plt.rcParams['xtick.labelsize'] = 16
+plt.rcParams['ytick.labelsize'] = 16
 
 # %%
 # Example signal with peaks
@@ -44,13 +44,14 @@ axs.scatter(peak_tofs, peak_heights, marker='o', s = 90,
 x1_time_domain = acoustic_x[:crop_ind]
 y1_time_domain = signal[:crop_ind]
 axs.plot(x1_time_domain, y1_time_domain, color='tab:orange', label='invariant part\nof the signal')
-axs.legend(loc='lower left', bbox_to_anchor=(0.68, 0), fontsize=14)
+axs.legend(loc='lower left', bbox_to_anchor=(0.60, 0), fontsize=18)
 axs.set_xlabel('ToF (μs)')
 axs.set_ylabel('Amplitude (a.u)')
 axs.set_xlim(-0.3, 10.3)
 axs.set_ylim(-30, 530)
 
 save_filename = 'Example signal'
+utils.save_figure(f, visualistion_path, save_filename, 'pdf')
 
 # %%
 # Data config A
@@ -153,7 +154,7 @@ f.patch.set_facecolor('white')
 axs.plot(freqs[1:], fft_magns[1:]/1000)
 
 axs.set_xlabel('Freq. (MHz)')
-axs.set_ylabel('Amplitude\n(a.u. x1000)')
+axs.set_ylabel('FFT Magnitude\n(a.u. x1000)')
 
 save_filename = 'Config E'
 utils.save_figure(f, visualistion_path, save_filename, 'pdf')
@@ -172,7 +173,7 @@ def plot_spectrogram(spectrogram, ax, freqs, frame_step, frame_length):
     # ax.pcolormesh(X, Y, log_spec)
     pcm = ax.pcolormesh(X, freqs, log_spec)
     cbar = plt.colorbar(pcm, ax=ax)
-    cbar.set_label('Log (FFT Magn)\n(a.u.)')
+    cbar.set_label('Log (FFT Magnitude)  \n(a.u.)')
 
 frame_length = 501
 frame_step = 5

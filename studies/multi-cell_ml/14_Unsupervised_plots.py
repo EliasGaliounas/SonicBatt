@@ -121,7 +121,7 @@ for i, data_config in enumerate(data_configs.keys()):
             axs[3,i].spines['left'].set_color('white')        
 
     # Axis house keeping
-    axs[0,i].set_title('Feature\nconfig.\n{}'.format(data_config))
+    axs[0,i].set_title('Feature\nconfig\n{}'.format(data_config))
     for j in range(4):
         axs[j,i].set_xticks([])
         axs[j,i].set_yticks([])
@@ -137,7 +137,7 @@ f.align_ylabels()
 
 sm = ScalarMappable(cmap=cmap)
 sm.set_array(y)
-cbar = f.colorbar(sm, ax=axs, label='Cell id', shrink=0.8, pad=0.02)
+cbar = f.colorbar(sm, ax=axs, label='Cell ID', shrink=0.8, pad=0.02)
 cbar.set_ticks(np.unique(y))
 
 # save_filename = 'Unsupervised'
