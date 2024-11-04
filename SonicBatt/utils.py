@@ -380,8 +380,8 @@ def animate_signals(df_cycling, signals, fft_magns=False, freqs_MHz = False,
     """
     # Some data and exception handling
     #---------------------------------
-    if  (type(fft_magns) != bool) & (type(freqs_MHz) == bool):
-        raise ValueError('Provide_frequencies in MHz to accompany the fft_mangs input')
+    if (type(fft_magns) != bool) & (type(freqs_MHz) == bool):
+        raise ValueError('Provide_frequencies in MHz to accompany the fft_magns input')
     voltages = df_cycling["V(V)"].to_numpy()
     temperatures = df_cycling["Temp(degC)"].to_numpy()
     if drc==False:

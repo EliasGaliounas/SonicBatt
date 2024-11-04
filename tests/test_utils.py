@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import os
+import matplotlib.pyplot as plt
 
 def test_root_dir():
     my_dir = utils.root_dir()
@@ -122,4 +123,54 @@ def test_spectrogram_data_for_plot(acoustic_data):
     spectrogram = utils.make_spectrogram(s0)
     log_spec = utils.spectrogram_data_for_plot(spectrogram)
     assert (log_spec.size != 0)
+
+def test_animate_spectrograms(acoustic_data):
+    df_acoust, _ = acoustic_data
+    signals = df_acoust['acoustics'].to_numpy()
+    def make_spec_dataset(waveforms):
+        # Initialize a list to store spectrograms
+        specs_list = []
+        for i, waveform in enumerate(signals):
+            spectrogram = utils.make_spectrogram(waveform)
+            specs_list.append(spectrogram)
+            # Print progress every 5000 iterations
+            if (i + 1) % 5000 == 0:
+                print(f"Processed {i + 1} out of {len(waveforms)} waveforms")
+        # Convert the list to a numpy array
+        specs = np.array(specs_list)
+        return specs
+    all_spectrograms = make_spec_dataset(signals)
+    #
+    ani = utils.animate_spectrograms(df_acoust['cycling'], signals, all_spectrograms)
+    assert (ani != None)
+
+def test_multi_cell_plot():
+    data_path = os.path.join(os.getcwd(), 'tests')
+    test_id = 'example_2'
+    n_peaks = 8
+    df = utils.df_with_peaks(data_path=data_path, test_id=test_id,
+                             n_peaks=n_peaks)    
+    # Make some changes to df for the sake of testing:
+    df[('cycling','Cycle')] = 1
+    df[('cycling','C-Rate')] = 1
+    selected_cells = ['EG_Ac_34']
+    cell_aliases = {'EG_Ac_34': 1}
+    f, _ = utils.multi_cell_plot(df, selected_cells, cell_aliases, c_rates=[1], return_axes=True)
+    assert f is not None
+    assert isinstance(f, plt.Figure)
+    # Now try the frequency domain
+    # signals = df['acoustics'].to_numpy()
+    # fft_coeffs = np.fft.rfft(signals, axis=1)
+    # fft_magns = np.abs(fft_coeffs)
+    # fft_magns[:,0] = 0
+    # n_freqs = 301
+    # fft_headings = [str(i) for i in range(1, n_freqs)]
+    # df_fft_magns = pd.DataFrame(data = fft_magns[:,1:n_freqs], columns = fft_headings)
+    # df = pd.concat([
+    #     df['cycling'], df['acoustics'], df['peak_heights'],
+    #     df['peak_tofs'], df_fft_magns], axis = 1,
+    #     keys = ['cycling', 'acoustics','peak_heights', 'peak_tofs',
+    #             'fft_magns'])
+
+
 
