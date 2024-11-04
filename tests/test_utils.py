@@ -145,6 +145,7 @@ def test_animate_spectrograms(acoustic_data):
     assert (ani != None)
 
 def test_multi_cell_plot():
+    # Test plotting the time domain
     data_path = os.path.join(os.getcwd(), 'tests')
     test_id = 'example_2'
     n_peaks = 8
@@ -156,21 +157,35 @@ def test_multi_cell_plot():
     selected_cells = ['EG_Ac_34']
     cell_aliases = {'EG_Ac_34': 1}
     f, _ = utils.multi_cell_plot(df, selected_cells, cell_aliases, c_rates=[1], return_axes=True)
-    assert f is not None
     assert isinstance(f, plt.Figure)
-    # Now try the frequency domain
-    # signals = df['acoustics'].to_numpy()
-    # fft_coeffs = np.fft.rfft(signals, axis=1)
-    # fft_magns = np.abs(fft_coeffs)
-    # fft_magns[:,0] = 0
-    # n_freqs = 301
-    # fft_headings = [str(i) for i in range(1, n_freqs)]
-    # df_fft_magns = pd.DataFrame(data = fft_magns[:,1:n_freqs], columns = fft_headings)
-    # df = pd.concat([
-    #     df['cycling'], df['acoustics'], df['peak_heights'],
-    #     df['peak_tofs'], df_fft_magns], axis = 1,
-    #     keys = ['cycling', 'acoustics','peak_heights', 'peak_tofs',
-    #             'fft_magns'])
 
-
-
+def test_multi_cell_plot2():
+    # Test plotting the frequency domain
+    data_path = os.path.join(os.getcwd(), 'tests')
+    test_id = 'example_2'
+    n_peaks = 8
+    df = utils.df_with_peaks(data_path=data_path, test_id=test_id,
+                             n_peaks=n_peaks)    
+    # Make some changes to df for the sake of testing:
+    df[('cycling','Cycle')] = 1
+    df[('cycling','C-Rate')] = 1
+    selected_cells = ['EG_Ac_34']
+    cell_aliases = {'EG_Ac_34': 1}
+    #
+    signals = df['acoustics'].to_numpy()
+    fft_coeffs = np.fft.rfft(signals, axis=1)
+    fft_magns = np.abs(fft_coeffs)
+    fft_magns[:,0] = 0
+    n_freqs = 301
+    fft_headings = [str(i) for i in range(1, n_freqs)]
+    df_fft_magns = pd.DataFrame(data = fft_magns[:,1:n_freqs], columns = fft_headings)
+    df = pd.concat([
+        df['cycling'], df['acoustics'], df['peak_heights'],
+        df['peak_tofs'], df_fft_magns], axis = 1,
+        keys = ['cycling', 'acoustics','peak_heights', 'peak_tofs',
+                'fft_magns'])
+    time_step = 2.5e-03 # microseconds
+    freqs_1d = np.fft.rfftfreq(300, d = time_step)
+    f, _ = utils.multi_cell_plot(df, selected_cells, cell_aliases, c_rates=[1],
+            domain = 'freq', freqs_1d = freqs_1d, freq_ind_pair = (18, 41), return_axes=True)
+    assert isinstance(f, plt.Figure)
