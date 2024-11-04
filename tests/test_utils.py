@@ -107,3 +107,19 @@ def test_animate_signals2(acoustic_data):
                       signals = signals, fft_magns=fft_magns,
                       freqs_MHz=freqs_MHz)
     assert (ani != None)
+
+def test_make_spectrogram(acoustic_data):
+    df_acoust, _ = acoustic_data
+    signals = df_acoust['acoustics'].to_numpy()
+    s0 = signals[0]
+    spectrogram = utils.make_spectrogram(s0)
+    assert (spectrogram != None)
+
+def test_spectrogram_data_for_plot(acoustic_data):
+    df_acoust, _ = acoustic_data
+    signals = df_acoust['acoustics'].to_numpy()
+    s0 = signals[0]
+    spectrogram = utils.make_spectrogram(s0)
+    log_spec = utils.spectrogram_data_for_plot(spectrogram)
+    assert (log_spec.size != 0)
+

@@ -668,10 +668,10 @@ def multi_cell_plot(df, cells, cell_aliases, x_quantity = 'Q(mAh)', c_rates = [1
             y_labels = [
                 'Ampl. (a.u.)\n(second peak)',
                 'Ampl. (a.u.)\n(last peak)',
-                'Ampl. Diff.\n(second & last\npeaks)',
+                'Ampl. Diff. (a.u.)\n(second & last\npeaks)',
                 'ToF (μs)\n(second peak)',
                 'ToF (μs)\n(last peak)',
-                'ToF Diff.\n(second & last\npeaks)',
+                'ToF Diff. (μs)\n(second & last\npeaks)',
             ]
         elif relative_peaks==False:
             n_rows = 5
@@ -869,7 +869,7 @@ def plot_cycling_data(df_cycling, df_peak_tofs, f, axs):
     axs[4].set_yticks([125, 165, 200, 235])
     #
     axs[0].set_ylabel('C-rate')
-    axs[1].set_ylabel('V')
+    axs[1].set_ylabel('V\n(V)')
     axs[2].set_ylabel('Temp\n($^\circ$C)')
     axs[3].set_ylabel('Q\n(mAh)')
     axs[4].set_ylabel('Capacity\n(mAh)')
