@@ -1,5 +1,7 @@
 <!-- <h1 align="center">SonicBatt</h1> -->
-![SonicBatt](assets/SonicBatt_logo.png)
+<!-- ![SonicBatt](assets/SonicBatt_logo.png)
+ -->
+ <img src="assets/SonicBatt_logo.png" alt="SonicBatt" width="200"/>
 <a href="https://codecov.io/gh/EliasGaliounas/SonicBatt" > 
  <img src="https://codecov.io/gh/EliasGaliounas/SonicBatt/branch/main/graph/badge.svg?token=O7VLF7G0P9"/> 
  </a>
