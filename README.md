@@ -8,6 +8,8 @@
  <img src="https://codecov.io/gh/EliasGaliounas/SonicBatt/branch/main/graph/badge.svg?token=O7VLF7G0P9"/> 
  </a>
 
+SonicBatt is a Python package assisting the visualisation and processing of acoustic signals obtained from batteries. The current use cases demonstrate functionalities wrapped around TensorFlow, and can be used to reproduce most results (and figures) of my PhD research.
+
 <h1 align="left">Documentation</h1>
 https://eliasgaliounas.github.io/SonicBatt/
 
