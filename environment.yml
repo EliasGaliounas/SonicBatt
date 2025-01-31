@@ -6,7 +6,7 @@ dependencies:
   - python=3.8
   - pip
   - ffmpeg>=4.3.1
-  - pyarrow>=13.0.0
+  # - pyarrow>=13.0.0
   - pywinpty
   - pip:
     - -r requirements.txt
