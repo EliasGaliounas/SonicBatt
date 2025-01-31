@@ -22,6 +22,7 @@ https://eliasgaliounas.github.io/SonicBatt/
    - Launch the Anaconda prompt
    - Activate your base environment (it's likely to have packages needed to create a new environment)
    - `conda env create -f <path\to\cloned_repository>\environment.yml` (replace <path\to\cloned_repository> with you path. Don't keep the <>).
+   - Activate the new environment (by default it is called `SonicBatt_env`)
 3) Install SonicBatt
    - `cd` to the <path\to\cloned_repository>
    - `pip install .` (or alternatively `pip install -e .` to install in editable mode)
