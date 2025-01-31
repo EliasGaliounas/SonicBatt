@@ -1,0 +1,38 @@
+﻿SonicBatt.utils
+===============
+
+.. automodule:: SonicBatt.utils
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      animate_signals
+      animate_spectrograms
+      colorscheme
+      create_custom_object
+      df_with_peaks
+      json_to_custom_object
+      make_spectrogram
+      multi_cell_plot
+      plot_cycling_data
+      root_dir
+      save_figure
+      signal_peaks
+      smooth_by_convolution
+      spectrogram_data_for_plot
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Acoustic_Pulse
+      Acoustic_PulseSequence
+      Acoustic_p2C
+      EIS_object
+      EIS_sequence
+      Protocol_custom_objects
+      Pulse
+      PulseSequence
+   
